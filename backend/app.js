@@ -1,19 +1,31 @@
 const dotenv = require("dotenv");
-// Load env variables first
 dotenv.config();
 
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./utils/db");
+const userRoutes = require("./routes/user.routes");
+const {
+  handleJSONError,
+  handle404,
+  globalErrorHandler,
+} = require("./middleware/errorHandler");
 
 const app = express();
 app.use(cors());
+app.use(express.json({ limit: "10kb" }));
+app.use(express.urlencoded({ extended: true }));
+app.use(handleJSONError);
 
-// Connect to MongoDB
 connectDB();
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
+
+app.use("/users", userRoutes);
+
+app.use(handle404);
+app.use(globalErrorHandler);
 
 module.exports = app;

@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const userSchema = new mongoose.Schema({
-  fullname: {
+  fullName: {
     firstName: {
       type: String,
       required: true,
@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     select: false,
+    minLength: [5, "Password must be at least 5 characters long"],
   },
   socketId: {
     type: String,
@@ -40,7 +41,7 @@ userSchema.methods.comparePassword = async function (password) {
   return isMatch;
 };
 
-userSchema.statics.hasPassword = async function (password) {
+userSchema.statics.hashPassword = async function (password) {
   const hashedPassword = await bcrypt.hash(password, 10);
   return hashedPassword;
 };
