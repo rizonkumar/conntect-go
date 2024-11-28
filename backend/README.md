@@ -321,3 +321,176 @@ Creates a new captain account in the system.
   "message": "Email already registered"
 }
 ```
+
+### Login Captain
+
+Authenticates a captain and returns a JWT token.
+
+**Endpoint:** `POST /api/captains/login`
+
+**Request Body:**
+```json
+{
+  "email": "string",    // Required, must be valid email
+  "password": "string"  // Required, min length: 5 characters
+}
+```
+
+**Success Response:**
+- **Status Code:** 200 (OK)
+```json
+{
+  "status": "success",
+  "message": "Captain logged in successfully",
+  "data": {
+    "captain": {
+      "_id": "string",
+      "fullName": {
+        "firstName": "string",
+        "lastName": "string"
+      },
+      "email": "string",
+      "vehicle": {
+        "color": "string",
+        "plate": "string",
+        "capacity": "number",
+        "vehicleType": "string"
+      },
+      "status": "string"
+    },
+    "token": "jwt_token_string"
+  }
+}
+```
+
+**Error Responses:**
+
+1. Invalid Input
+- **Status Code:** 400 (Bad Request)
+```json
+{
+  "success": false,
+  "errors": [
+    {
+      "msg": "Error message",
+      "param": "field_name",
+      "location": "body"
+    }
+  ]
+}
+```
+
+2. Invalid Credentials
+- **Status Code:** 401 (Unauthorized)
+```json
+{
+  "success": false,
+  "message": "Invalid email or password"
+}
+```
+
+### Get Captain Profile
+
+Retrieves the profile information of the authenticated captain.
+
+**Endpoint:** `GET /api/captains/profile`
+
+**Headers:**
+```
+Authorization: Bearer jwt_token_string
+```
+
+**Success Response:**
+- **Status Code:** 200 (OK)
+```json
+{
+  "status": "success",
+  "message": "Captain profile fetched successfully",
+  "data": {
+    "captain": {
+      "_id": "string",
+      "fullName": {
+        "firstName": "string",
+        "lastName": "string"
+      },
+      "email": "string",
+      "vehicle": {
+        "color": "string",
+        "plate": "string",
+        "capacity": "number",
+        "vehicleType": "string"
+      },
+      "status": "string"
+    }
+  }
+}
+```
+
+**Error Responses:**
+
+1. No Token
+- **Status Code:** 401 (Unauthorized)
+```json
+{
+  "success": false,
+  "message": "No token provided. Please login first"
+}
+```
+
+2. Invalid Token
+- **Status Code:** 401 (Unauthorized)
+```json
+{
+  "success": false,
+  "message": "Invalid token"
+}
+```
+
+3. Captain Not Found
+- **Status Code:** 404 (Not Found)
+```json
+{
+  "success": false,
+  "message": "Captain not found"
+}
+```
+
+### Logout Captain
+
+Logs out the captain by blacklisting the current token.
+
+**Endpoint:** `GET /api/captains/logout`
+
+**Headers:**
+```
+Authorization: Bearer jwt_token_string
+```
+
+**Success Response:**
+- **Status Code:** 200 (OK)
+```json
+{
+  "status": "success",
+  "message": "Captain logged out successfully"
+}
+```
+
+**Error Responses:**
+
+1. No Token
+- **Status Code:** 400 (Bad Request)
+```json
+{
+  "success": false,
+  "message": "No token found"
+}
+```
+
+2. Invalid Token
+- **Status Code:** 401 (Unauthorized)
+```json
+{
+  "success": false,
+  "message": "Invalid token"
+}
+```
