@@ -13,15 +13,14 @@ const UserSignup = () => {
   const submitHandler = (e) => {
     e.preventDefault();
     // TODO: Handle form submission
-    // Create payload object
-    /* const payload = {
+    const payload = {
       fullName: {
         firstName,
-        lastName
+        lastName,
       },
       email,
-      password
-    }; */
+      password,
+    };
     // Make API call to register user
   };
 
@@ -30,8 +29,8 @@ const UserSignup = () => {
       {/* Black Header Bar with Logo */}
       <div className="bg-black w-full p-4">
         <div className="max-w-md mx-auto">
-          <span 
-            className="text-white text-xl font-bold cursor-pointer" 
+          <span
+            className="text-white text-xl font-bold cursor-pointer"
             onClick={() => navigate("/")}
           >
             Connect<span className="text-blue-500">Go</span>
