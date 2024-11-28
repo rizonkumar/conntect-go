@@ -10,6 +10,8 @@ const UserLogin = () => {
   const submitHandler = (e) => {
     e.preventDefault();
     // Handle form submission
+    console.log("Email:", email);
+    console.log("Password:", password);
   };
 
   return (
@@ -17,8 +19,8 @@ const UserLogin = () => {
       {/* Black Header Bar with Logo */}
       <div className="bg-black w-full p-4">
         <div className="max-w-md mx-auto">
-          <span 
-            className="text-white text-xl font-bold cursor-pointer" 
+          <span
+            className="text-white text-xl font-bold cursor-pointer"
             onClick={() => navigate("/")}
           >
             Connect<span className="text-blue-500">Go</span>

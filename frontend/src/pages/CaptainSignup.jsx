@@ -69,10 +69,10 @@ const CaptainSignup = () => {
     }
 
     // TODO: API Integration
-    /* const payload = {
+    const payload = {
       fullName: {
         firstName: firstName.trim(),
-        lastName: lastName.trim()
+        lastName: lastName.trim(),
       },
       email: email.trim(),
       password,
@@ -80,9 +80,11 @@ const CaptainSignup = () => {
         color: vehicleColor.trim(),
         plate: licensePlate.toUpperCase(),
         capacity: parseInt(capacity),
-        vehicleType
-      }
-    }; */
+        vehicleType,
+      },
+    };
+
+    console.log("Payload:", payload);
 
     try {
       // TODO: Make API call
