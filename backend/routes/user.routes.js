@@ -2,7 +2,7 @@ const express = require("express");
 
 const router = express.Router();
 const { body } = require("express-validator");
-const { registerUser } = require("../controllers/user.controller");
+const { registerUser, loginUser } = require("../controllers/user.controller");
 
 router.post(
   "/register",
@@ -16,6 +16,17 @@ router.post(
       .withMessage("Password must be at least 5 characters long"),
   ],
   registerUser
+);
+
+router.post(
+  "/login",
+  [
+    body("email").isEmail().withMessage("Invalid email"),
+    body("password")
+      .isLength({ min: 5 })
+      .withMessage("Password must be at least 5 characters long"),
+  ],
+  loginUser
 );
 
 module.exports = router;
