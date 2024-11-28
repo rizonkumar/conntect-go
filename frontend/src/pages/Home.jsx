@@ -1,18 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Car, MapPin, Clock } from "lucide-react";
+import ConnectGoLogo from "../components/ConnectGoLogo";
 
 const Home = () => {
-  const ConnectGoLogo = () => (
-    <div className="flex items-center">
-      <div className="bg-black rounded-lg p-2">
-        <span className="text-xl font-bold text-white">
-          Connect<span className="text-blue-400">Go</span>
-        </span>
-      </div>
-    </div>
-  );
-
   const features = [
     {
       icon: <Car className="w-6 h-6" />,
