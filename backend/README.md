@@ -235,3 +235,89 @@ or
   "message": "Token is blacklisted"
 }
 ```
+
+### Register Captain
+
+Creates a new captain account in the system.
+
+**Endpoint:** `POST /api/captains/register`
+
+**Request Body:**
+```json
+{
+  "fullName": {
+    "firstName": "string",    // Required
+    "lastName": "string"      // Required
+  },
+  "email": "string",         // Required, must be unique
+  "password": "string",      // Required
+  "vehicle": {
+    "color": "string",       // Required
+    "plate": "string",       // Required, vehicle plate number
+    "capacity": "number",    // Required, passenger capacity
+    "vehicleType": "string"  // Required, type of vehicle (e.g., "car")
+  }
+}
+```
+
+**Success Response:**
+- **Status Code:** 201 (Created)
+```json
+{
+  "status": "success",
+  "message": "Captain registered successfully",
+  "data": {
+    "captain": {
+      "_id": "string",
+      "fullName": {
+        "firstName": "string",
+        "lastName": "string"
+      },
+      "email": "string",
+      "vehicle": {
+        "color": "string",
+        "plate": "string",
+        "capacity": "number",
+        "vehicleType": "string"
+      },
+      "status": "string"     // Initial status will be "inactive"
+    },
+    "token": "jwt_token_string"
+  }
+}
+```
+
+**Error Responses:**
+
+1. Invalid Input
+- **Status Code:** 400 (Bad Request)
+```json
+{
+  "success": false,
+  "errors": [
+    {
+      "msg": "Error message",
+      "param": "field_name",
+      "location": "body"
+    }
+  ]
+}
+```
+
+2. Missing Required Fields
+- **Status Code:** 400 (Bad Request)
+```json
+{
+  "success": false,
+  "message": "Missing required fields"
+}
+```
+
+3. Email Already Exists
+- **Status Code:** 409 (Conflict)
+```json
+{
+  "success": false,
+  "message": "Email already registered"
+}
+```
