@@ -134,7 +134,10 @@ const CaptainSignup = () => {
       {/* Black Header Bar with Logo */}
       <div className="bg-black w-full p-4">
         <div className="max-w-md mx-auto">
-          <span className="text-white text-xl font-bold">
+          <span
+            className="text-white text-xl font-bold cursor-pointer"
+            onClick={() => navigate("/")}
+          >
             Connect<span className="text-blue-500">Go</span>
           </span>
         </div>
@@ -276,8 +279,17 @@ const CaptainSignup = () => {
             <ArrowRight className="w-5 h-5 ml-2" />
           </button>
 
-          {/* Sign up as User Link */}
-          <div className="text-center mt-6">
+          {/* Sign in and Sign up Links */}
+          <div className="text-center mt-6 space-y-4">
+            <p className="text-gray-600">
+              Already have an account?{" "}
+              <Link
+                to="/captain-login"
+                className="text-blue-600 hover:text-blue-800"
+              >
+                Sign in
+              </Link>
+            </p>
             <p className="text-gray-600">
               Want to register as a user?{" "}
               <Link to="/signup" className="text-blue-600 hover:text-blue-800">

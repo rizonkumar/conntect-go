@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Car } from "lucide-react";
 
 const UserLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -16,7 +17,10 @@ const UserLogin = () => {
       {/* Black Header Bar with Logo */}
       <div className="bg-black w-full p-4">
         <div className="max-w-md mx-auto">
-          <span className="text-white text-xl font-bold">
+          <span 
+            className="text-white text-xl font-bold cursor-pointer" 
+            onClick={() => navigate("/")}
+          >
             Connect<span className="text-blue-500">Go</span>
           </span>
         </div>
