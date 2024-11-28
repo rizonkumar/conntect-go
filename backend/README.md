@@ -148,3 +148,90 @@ Authenticates a user and returns a JWT token.
   "message": "Invalid email or password"
 }
 ```
+
+### Get User Profile
+
+Retrieves the profile information of the authenticated user.
+
+**Endpoint:** `GET /api/users/profile`
+
+**Headers:**
+
+- `Authorization`: Bearer token (Required)
+  or
+- Cookie with `token` (Required)
+
+**Success Response:**
+
+- **Status Code:** 200 (OK)
+
+```json
+{
+  "success": true,
+  "message": "User profile fetched successfully",
+  "data": {
+    "user": {
+      "fullName": {
+        "firstName": "string",
+        "lastName": "string"
+      },
+      "email": "string",
+      "_id": "user_id"
+    }
+  }
+}
+```
+
+**Error Response:**
+
+- **Status Code:** 401 (Unauthorized)
+
+```json
+{
+  "success": false,
+  "message": "No token provided. Please login first"
+}
+```
+
+### Logout User
+
+Logs out the current user by blacklisting their token.
+
+**Endpoint:** `GET /api/users/logout`
+
+**Headers:**
+
+- `Authorization`: Bearer token (Required)
+  or
+- Cookie with `token` (Required)
+
+**Success Response:**
+
+- **Status Code:** 200 (OK)
+
+```json
+{
+  "success": true,
+  "message": "User logged out successfully"
+}
+```
+
+**Error Response:**
+
+- **Status Code:** 401 (Unauthorized)
+
+```json
+{
+  "success": false,
+  "message": "No token provided. Please login first"
+}
+```
+
+or
+
+```json
+{
+  "success": false,
+  "message": "Token is blacklisted"
+}
+```
