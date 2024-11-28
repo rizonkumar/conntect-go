@@ -5,6 +5,8 @@ const express = require("express");
 const cors = require("cors");
 const connectDB = require("./utils/db");
 const userRoutes = require("./routes/user.routes");
+const captainRoutes = require("./routes/captain.routes");
+
 const {
   handleJSONError,
   handle404,
@@ -26,6 +28,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/users", userRoutes);
+app.use("/captains", captainRoutes);
 
 app.use(handle404);
 app.use(globalErrorHandler);

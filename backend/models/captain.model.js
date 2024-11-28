@@ -51,7 +51,7 @@ const captainSchema = new mongoose.Schema({
       required: true,
       min: [1, "Capacity must be at least 1 person"],
     },
-    vechileType: {
+    vehicleType: {
       type: String,
       required: true,
       enum: ["car", "motorcycle", "auto"],
@@ -85,3 +85,5 @@ captainSchema.statics.hashPassword = async function (password) {
 };
 
 const captainModel = mongoose.model("Captain", captainSchema);
+
+module.exports = captainModel;
