@@ -2,6 +2,7 @@ const captainModel = require("../models/captain.model");
 const AppError = require("../utils/AppError");
 const captianService = require("../services/captain.service");
 const { validationResult } = require("express-validator");
+const blacklistTokenModel = require("../models/blacklistToken.model");
 
 module.exports.registerCaptain = async (req, res, next) => {
   try {
@@ -126,5 +127,27 @@ module.exports.getCaptainProfile = async (req, res, next) => {
     });
   } catch (error) {
     next(new AppError(error.message || "Error fetching captain profile", 500));
+  }
+};
+
+module.exports.logoutCaptain = async (req, res, next) => {
+  try {
+    const token =
+      req.cookies?.token || req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return next(new AppError("No token found", 400));
+    }
+
+    await blacklistTokenModel.create({ token });
+
+    res.clearCookie("token");
+
+    res.status(200).json({
+      status: "success",
+      message: "Captain logged out successfully",
+    });
+  } catch (error) {
+    next(new AppError(error.message || "Error during logout", 500));
   }
 };

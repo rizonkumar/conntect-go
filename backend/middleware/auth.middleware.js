@@ -74,9 +74,10 @@ module.exports.authCaptain = async (req, res, next) => {
       return next(new AppError("User not found", 401));
     }
 
-    if (captain.status === "inactive") {
-      return next(new AppError("Captain account is inactive", 403));
-    }
+    // Comment this code for now
+    // if (captain.status === "inactive") {
+    //   return next(new AppError("Captain account is inactive", 403));
+    // }
 
     req.captain = captain;
     next();

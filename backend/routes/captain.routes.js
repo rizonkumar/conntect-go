@@ -5,6 +5,7 @@ const {
   registerCaptain,
   loginCaptain,
   getCaptainProfile,
+  logoutCaptain,
 } = require("../controllers/captian.controller");
 const { authCaptain } = require("../middleware/auth.middleware");
 
@@ -42,4 +43,7 @@ router.post(
 );
 
 router.get("/profile", authCaptain, getCaptainProfile);
+
+router.get("/logout", authCaptain, logoutCaptain);
+
 module.exports = router;
