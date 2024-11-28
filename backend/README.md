@@ -81,3 +81,70 @@ Creates a new user account in the system.
   "message": "Email already registered"
 }
 ```
+
+### Login User
+
+Authenticates a user and returns a JWT token.
+
+**Endpoint:** `POST /api/users/login`
+
+**Request Body:**
+
+```json
+{
+  "email": "string", // Required, must be valid email
+  "password": "string" // Required, min length: 5 characters
+}
+```
+
+**Success Response:**
+
+- **Status Code:** 200 (OK)
+
+```json
+{
+  "success": true,
+  "message": "User logged in successfully",
+  "data": {
+    "token": "jwt_token_string",
+    "user": {
+      "fullName": {
+        "firstName": "string",
+        "lastName": "string"
+      },
+      "email": "string",
+      "_id": "user_id"
+    }
+  }
+}
+```
+
+**Error Responses:**
+
+1. Invalid Input
+
+- **Status Code:** 400 (Bad Request)
+
+```json
+{
+  "success": false,
+  "errors": [
+    {
+      "msg": "Error message",
+      "param": "field_name",
+      "location": "body"
+    }
+  ]
+}
+```
+
+2. Invalid Credentials
+
+- **Status Code:** 401 (Unauthorized)
+
+```json
+{
+  "success": false,
+  "message": "Invalid email or password"
+}
+```

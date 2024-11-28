@@ -60,3 +60,52 @@ module.exports.registerUser = async (req, res, next) => {
     next(error);
   }
 };
+
+module.exports.loginUser = async (req, res, next) => {
+  try {
+    const error = validationResult(req);
+    if (!error.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        errors: error.array(),
+      });
+    }
+
+    const { email, password } = req.body;
+
+    const user = await userModel.findOne({ email }).select("+password");
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password",
+      });
+    }
+
+    const isMatch = await user.comparePassword(password);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password",
+      });
+    }
+
+    const token = user.generateAuthToken();
+
+    res.status(200).json({
+      success: true,
+      message: "User logged in successfully",
+      data: {
+        token,
+        user: {
+          fullName: user.fullName,
+          email: user.email,
+          _id: user._id,
+        },
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
