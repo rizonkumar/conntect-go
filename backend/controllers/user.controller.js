@@ -41,6 +41,13 @@ module.exports.registerUser = async (req, res, next) => {
 
     const token = user.generateAuthToken();
 
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    });
+
     res.status(201).json({
       success: true,
       message: "User created successfully",
@@ -93,6 +100,13 @@ module.exports.loginUser = async (req, res, next) => {
 
     const token = user.generateAuthToken();
 
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    });
+
     res.status(200).json({
       success: true,
       message: "User logged in successfully",
@@ -106,6 +120,20 @@ module.exports.loginUser = async (req, res, next) => {
       },
     });
   } catch (error) {
-    console.log(error);
+    throw new AppError("Something went wrong", 500);
   }
+};
+
+module.exports.getUserProfile = async (req, res, next) => {
+  res.status(200).json({
+    success: true,
+    message: "User profile fetched successfully",
+    data: {
+      user: {
+        fullName: req.user.fullName,
+        email: req.user.email,
+        _id: req.user._id,
+      },
+    },
+  });
 };
