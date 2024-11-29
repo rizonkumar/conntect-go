@@ -25,3 +25,33 @@ export const sampleLocations = [
     fullAddress: "Kafla Colony, Mathasahi Area, Cuttack, Odisha",
   },
 ];
+
+export const rides = [
+  {
+    id: 1,
+    name: "Connect Go",
+    time: "3 mins away",
+    price: 537.47,
+    originalPrice: 584.21,
+    description: "Affordable compact rides",
+    icon: "🚗",
+  },
+  {
+    id: 2,
+    name: "Premier",
+    time: "3 mins away",
+    price: 644.86,
+    originalPrice: 700.93,
+    description: "Comfortable sedans, top-quality drivers",
+    icon: "🚙",
+  },
+  {
+    id: 3,
+    name: "Connect Auto",
+    time: "1 min away",
+    price: 236.28,
+    originalPrice: 306.86,
+    description: "No bargaining, doorstep pick-up",
+    icon: "🛺",
+  },
+];
