@@ -1,3 +1,59 @@
+// data.js
+export const dummyDriverData = {
+  name: "Prasant",
+  vehicleNumber: "OD05BL6014",
+  vehicleType: "Bajaj Maxima Z",
+  rating: 4.75,
+  image: "https://placehold.co/100x100", // Replace with actual driver image URL
+  pin: [1, 1, 0, 1],
+  eta: 5,
+};
+
+export const dummyRideData = {
+  price: 484.25,
+  paymentMethod: "Cash",
+  cancellationFee: 25,
+  locations: {
+    pickup: {
+      name: "Cmatrix Learning",
+      address:
+        "3D 575 Sector 8, Markat Nagar, behind Doctor Tonpe Road, CDA Sector 8, Cuttack, Odisha",
+    },
+    dropoff: {
+      name: "The Presidency | Hotels In Bhubaneswar Near Kalinga Stadium",
+      address:
+        "1471/A, near ISKON Temple, ESIC Quarters, Nayapalli, Bhubaneswar, Odisha",
+    },
+  },
+};
+
+export const actionButtons = [
+  {
+    id: 1,
+    name: "Safety",
+    icon: "Shield",
+  },
+  {
+    id: 2,
+    name: "Share my trip",
+    icon: "Share2",
+  },
+  {
+    id: 3,
+    name: "Call driver",
+    icon: "Phone",
+  },
+];
+
+export const cancelMessages = {
+  title: "Cancel this ride?",
+  description: "Cancellation fee of ₹25 may apply as per our policies",
+  buttons: {
+    confirm: "Yes, cancel ride",
+    reject: "No, keep ride",
+  },
+};
+
 export const sampleLocations = [
   {
     id: 1,
