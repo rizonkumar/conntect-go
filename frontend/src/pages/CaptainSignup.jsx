@@ -1,9 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Car, AlertCircle } from "lucide-react";
+import { ArrowRight, AlertCircle } from "lucide-react";
+import { CaptainDataContext } from "../context/CaptainContext";
+import axios from "axios";
+
+const InputField = ({
+  label,
+  type,
+  value,
+  onChange,
+  error,
+  placeholder,
+  required = true,
+}) => (
+  <div className="space-y-2">
+    <label className="text-sm text-gray-600">
+      {label} {required && <span className="text-red-500">*</span>}
+    </label>
+    <input
+      type={type}
+      value={value}
+      onChange={onChange}
+      className={`w-full p-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-gray-900 ${
+        error ? "border-2 border-red-500" : ""
+      }`}
+      placeholder={placeholder}
+      required={required}
+    />
+    {error && (
+      <p className="text-red-500 text-sm flex items-center gap-1">
+        <AlertCircle className="w-4 h-4" />
+        {error}
+      </p>
+    )}
+  </div>
+);
 
 const CaptainSignup = () => {
   const navigate = useNavigate();
+  const { setCaptain, setIsLoading, setError, isLoading, error } =
+    useContext(CaptainDataContext);
 
   // Personal information state
   const [firstName, setFirstName] = useState("");
@@ -68,7 +104,6 @@ const CaptainSignup = () => {
       return;
     }
 
-    // TODO: API Integration
     const payload = {
       fullName: {
         firstName: firstName.trim(),
@@ -84,52 +119,37 @@ const CaptainSignup = () => {
       },
     };
 
-    console.log("Payload:", payload);
+    setIsLoading(true);
+    setError(null);
 
     try {
-      // TODO: Make API call
-      // const response = await axios.post('/api/captains/register', payload);
-      // if (response.data.status === "success") {
-      //   navigate('/captain-login');
-      // }
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/captains/register`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.data) {
+        setCaptain(response.data);
+        if (response.data.token) {
+          localStorage.setItem("captainToken", response.data.token);
+        }
+        navigate("/captain-home");
+      }
     } catch (error) {
-      // Handle API errors
-      console.error("Registration failed:", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        "Registration failed. Please try again.";
+      setError(errorMessage);
+      console.error("Registration failed:", errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  // Input component for reusability
-  const InputField = ({
-    label,
-    type,
-    value,
-    onChange,
-    error,
-    placeholder,
-    required = true,
-  }) => (
-    <div className="space-y-2">
-      <label className="text-sm text-gray-600">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
-      <input
-        type={type}
-        value={value}
-        onChange={onChange}
-        className={`w-full p-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-gray-900 ${
-          error ? "border-2 border-red-500" : ""
-        }`}
-        placeholder={placeholder}
-        required={required}
-      />
-      {error && (
-        <p className="text-red-500 text-sm flex items-center gap-1">
-          <AlertCircle className="w-4 h-4" />
-          {error}
-        </p>
-      )}
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-white">
@@ -153,6 +173,19 @@ const CaptainSignup = () => {
         <p className="text-gray-600 mb-8">
           Register your vehicle and start earning
         </p>
+
+        {isLoading && (
+          <div className="text-center text-gray-600 mb-4">
+            Processing registration...
+          </div>
+        )}
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded-lg mb-4 flex items-center gap-2">
+            <AlertCircle className="w-5 h-5" />
+            {error}
+          </div>
+        )}
 
         <form onSubmit={submitHandler} className="space-y-6">
           {/* Personal Information Section */}
@@ -275,10 +308,19 @@ const CaptainSignup = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-900 transition-colors flex items-center justify-center mt-8"
+            disabled={isLoading}
+            className={`w-full bg-black text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center mt-8 ${
+              isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-900"
+            }`}
           >
-            Register as Captain
-            <ArrowRight className="w-5 h-5 ml-2" />
+            {isLoading ? (
+              "Processing..."
+            ) : (
+              <>
+                Register as Captain
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </>
+            )}
           </button>
 
           {/* Sign in and Sign up Links */}

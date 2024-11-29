@@ -1,15 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, User } from "lucide-react";
+import { ArrowRight, User, AlertCircle } from "lucide-react";
+import { CaptainDataContext } from "../context/CaptainContext";
+import axios from "axios";
 
 const CaptainLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { setCaptain } = useContext(CaptainDataContext);
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-    // Handle form submission
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/captains/login`,
+        {
+          email: email.trim(),
+          password: password,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.data) {
+        console.log("Captain login response:", response.data);
+        const token = response.data.data?.token || response.data.token;
+        console.log("Extracted token:", token);
+
+        if (token) {
+          localStorage.setItem("captainToken", token);
+          setCaptain(response.data);
+          navigate("/captain-home");
+        } else {
+          console.error("No token found in response");
+          setError("Login failed: No token received");
+        }
+      }
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Login failed. Please try again.";
+      setError(errorMessage);
+      console.error("Login failed:", errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -17,8 +60,8 @@ const CaptainLogin = () => {
       {/* Black Header Bar with Logo */}
       <div className="bg-black w-full p-4">
         <div className="max-w-md mx-auto">
-          <span 
-            className="text-white text-xl font-bold cursor-pointer" 
+          <span
+            className="text-white text-xl font-bold cursor-pointer"
             onClick={() => navigate("/")}
           >
             Connect<span className="text-blue-500">Go</span>
@@ -32,6 +75,13 @@ const CaptainLogin = () => {
           Welcome Captain
         </h1>
 
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded-lg mb-4 flex items-center gap-2">
+            <AlertCircle className="w-5 h-5" />
+            {error}
+          </div>
+        )}
+
         <form onSubmit={submitHandler} className="space-y-6">
           {/* Email Input */}
           <div className="space-y-2">
@@ -42,6 +92,7 @@ const CaptainLogin = () => {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full p-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-gray-900"
               placeholder="name@example.com"
+              required
             />
           </div>
 
@@ -54,16 +105,26 @@ const CaptainLogin = () => {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full p-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-gray-900"
               placeholder="Enter your password"
+              required
             />
           </div>
 
           {/* Sign In Button */}
           <button
             type="submit"
-            className="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-900 transition-colors flex items-center justify-center"
+            disabled={isLoading}
+            className={`w-full bg-black text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center ${
+              isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-900"
+            }`}
           >
-            Sign In
-            <ArrowRight className="w-5 h-5 ml-2" />
+            {isLoading ? (
+              "Signing in..."
+            ) : (
+              <>
+                Sign In
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </>
+            )}
           </button>
 
           {/* Forgot Password Link */}
