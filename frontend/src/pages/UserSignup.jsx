@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Car } from "lucide-react";
+import axios from "axios";
+import { UserDataContext } from "../context/userContext";
 
 const UserSignup = () => {
   // State for form fields
@@ -8,20 +10,36 @@ const UserSignup = () => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const navigate = useNavigate();
 
-  const submitHandler = (e) => {
+  const { user, setUser } = useContext(UserDataContext);
+
+  const submitHandler = async (e) => {
     e.preventDefault();
-    // TODO: Handle form submission
-    const payload = {
-      fullName: {
-        firstName,
-        lastName,
-      },
-      email,
-      password,
-    };
-    // Make API call to register user
+    try {
+      const payload = {
+        fullName: {
+          firstName,
+          lastName,
+        },
+        email,
+        password,
+      };
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/users/register`,
+        payload
+      );
+      if (response.status === 201) {
+        const { data } = response.data;
+        setUser(data.user);
+        localStorage.setItem("token", data.token);
+        navigate("/home");
+      }
+    } catch (error) {
+      console.error("Registration failed:", error);
+    }
   };
 
   return (
