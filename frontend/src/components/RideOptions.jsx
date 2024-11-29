@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { Clock, User } from "lucide-react";
 import { rides } from "../../constants/data";
 import RideConfirmation from "./RideConfirmation";
+import RideConfirm from "./RideConfirm";
 
 const RideOptions = ({ pickup, dropoff, onBack }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [selectedRide, setSelectedRide] = useState(rides[3]); // Default to Connect Auto
 
   if (showConfirmation) {
@@ -13,6 +15,20 @@ const RideOptions = ({ pickup, dropoff, onBack }) => {
         pickup={pickup}
         dropoff={dropoff}
         onCancel={() => setShowConfirmation(false)}
+      />
+    );
+  }
+
+  if (showConfirm) {
+    return (
+      <RideConfirm
+        selectedRide={selectedRide}
+        pickup={pickup}
+        onNext={() => {
+          setShowConfirm(false);
+          setShowConfirmation(true);
+        }}
+        onBack={() => setShowConfirm(false)}
       />
     );
   }
@@ -127,7 +143,7 @@ const RideOptions = ({ pickup, dropoff, onBack }) => {
         </div>
         <button
           className="w-full bg-black text-white py-3 rounded-lg font-medium"
-          onClick={() => setShowConfirmation(true)}
+          onClick={() => setShowConfirm(true)}
         >
           Request {selectedRide.name}
         </button>
