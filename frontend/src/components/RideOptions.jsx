@@ -9,13 +9,9 @@ const RideOptions = ({ pickup, dropoff, onBack }) => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [selectedRide, setSelectedRide] = useState(rides[3]); // Default to Connect Auto
 
-  // Use useCallback to maintain function reference
   const handleBackFromRides = useCallback(() => {
-    console.log("Back from rides called");
     setShowConfirm(false);
   }, []);
-
-  console.log("RideOptions rendered with state:", { showConfirmation, showConfirm, selectedRide });
 
   const handleRideSelect = (ride) => {
     setSelectedRide(ride);
@@ -32,7 +28,6 @@ const RideOptions = ({ pickup, dropoff, onBack }) => {
   }
 
   if (showConfirm) {
-    console.log("Rendering RideConfirm with handleBackFromRides:", handleBackFromRides);
     return (
       <RideConfirm
         selectedRide={selectedRide}
