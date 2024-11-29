@@ -68,34 +68,36 @@ const RideOptions = ({ pickup, dropoff, onBack }) => {
           <div
             key={ride.id}
             onClick={() => handleRideSelect(ride)}
-            className={`py-4 border-b last:border-b-0 flex items-center justify-between cursor-pointer ${
+            className={`my-2 cursor-pointer transition-all ${
               selectedRide.id === ride.id
-                ? "border-2 border-black rounded-lg my-2 p-2"
-                : ""
+                ? "border-2 border-gray-900 rounded-lg"
+                : "border border-transparent"
             }`}
           >
-            <div className="flex items-center space-x-4">
-              <img
-                src={ride.icon}
-                alt={ride.name}
-                className="w-12 h-12 object-contain"
-              />
-              <div>
-                <div className="flex items-center space-x-2">
-                  <h3 className="font-medium">{ride.name}</h3>
-                  <span className="text-sm text-gray-500">{ride.time}</span>
+            <div className="flex items-center justify-between p-4">
+              <div className="flex items-center space-x-4">
+                <img
+                  src={ride.icon}
+                  alt={ride.name}
+                  className="w-12 h-12 object-contain"
+                />
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <h3 className="font-medium">{ride.name}</h3>
+                    <span className="text-sm text-gray-500">{ride.time}</span>
+                  </div>
+                  <p className="text-sm text-gray-500">{ride.description}</p>
                 </div>
-                <p className="text-sm text-gray-500">{ride.description}</p>
               </div>
-            </div>
-            <div className="text-right">
-              <div className="flex items-center justify-end space-x-1">
-                <span className="text-green-600 text-sm">↓</span>
-                <span className="font-medium">₹{ride.price}</span>
+              <div className="text-right">
+                <div className="flex items-center justify-end space-x-1">
+                  <span className="text-green-600 text-sm">↓</span>
+                  <span className="font-medium">₹{ride.price}</span>
+                </div>
+                <span className="text-sm text-gray-500 line-through">
+                  ₹{ride.originalPrice}
+                </span>
               </div>
-              <span className="text-sm text-gray-500 line-through">
-                ₹{ride.originalPrice}
-              </span>
             </div>
           </div>
         ))}
