@@ -12,7 +12,9 @@ const Home = () => {
   const [showRideOptions, setShowRideOptions] = useState(false);
 
   const submitHandler = async (e) => {
-    e.preventDefault();
+    if (e) {
+      e.preventDefault();
+    }
 
     if (!pickup || !dropoff) {
       alert("Please enter pickup and dropoff locations");
@@ -22,6 +24,10 @@ const Home = () => {
     setPanelOpen(false);
     setShowRideOptions(true);
     console.log("Searching ride from", pickup, "to", dropoff);
+  };
+
+  const handleBackFromRides = () => {
+    setShowRideOptions(false);
   };
 
   const mapImageUrl =
@@ -133,6 +139,8 @@ const Home = () => {
         setPickup={setPickup}
         dropoff={dropoff}
         setDropoff={setDropoff}
+        onSearch={submitHandler}
+        className="h-[calc(100vh-56px)]"
       />
 
       {/* Ride Options Panel */}
@@ -140,7 +148,7 @@ const Home = () => {
         <RideOptions
           pickup={pickup}
           dropoff={dropoff}
-          onBack={() => setShowRideOptions(false)}
+          onBack={handleBackFromRides}
         />
       )}
     </div>

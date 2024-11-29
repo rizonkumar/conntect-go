@@ -19,6 +19,7 @@ export const LocationsPanel = ({
   setPickup,
   dropoff,
   setDropoff,
+  onSearch,
 }) => {
   const [activeInput, setActiveInput] = useState(null);
   const [isSearchMode, setIsSearchMode] = useState(false);
@@ -55,6 +56,11 @@ export const LocationsPanel = ({
     }
   };
 
+  const handleSearch = () => {
+    onClose();
+    onSearch();
+  };
+
   const filteredLocations =
     activeInput === "pickup"
       ? sampleLocations.filter(
@@ -72,78 +78,77 @@ export const LocationsPanel = ({
     <div
       ref={panelRef}
       className="fixed inset-0 bg-white z-50 transform translate-y-full locations-panel"
-      style={{ height: "100vh" }}
+      style={{ height: "calc(100vh)" }}
     >
       {!isSearchMode ? (
-        // Initial Panel View
-        <div className="p-4">
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100"
-          >
-            <X className="h-6 w-6" />
-          </button>
-
-          <h1 className="text-2xl font-bold mb-6">Get a ride</h1>
-
-          <div className="space-y-4">
-            {/* Pickup Input */}
-            <div className="relative">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                <Circle className="h-5 w-5 text-gray-600 fill-current" />
-              </div>
-              <input
-                type="text"
-                value={pickup}
-                onChange={(e) => setPickup(e.target.value)}
-                onFocus={() => {
-                  setActiveInput("pickup");
-                  setIsSearchMode(true);
-                }}
-                placeholder="Pickup location"
-                className="w-full bg-gray-100 p-4 pl-12 rounded-lg focus:outline-none"
-              />
-            </div>
-
-            {/* Dropoff Input */}
-            <div className="relative">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                <Square className="h-5 w-5 text-gray-600 fill-current" />
-              </div>
-              <input
-                type="text"
-                value={dropoff}
-                onChange={(e) => setDropoff(e.target.value)}
-                onFocus={() => {
-                  setActiveInput("dropoff");
-                  setIsSearchMode(true);
-                }}
-                placeholder="Dropoff location"
-                className="w-full bg-gray-100 p-4 pl-12 rounded-lg focus:outline-none"
-              />
-            </div>
-
-            {/* Time Selector */}
-            <button className="w-full flex items-center justify-between p-4 bg-gray-100 rounded-lg">
-              <div className="flex items-center gap-3">
-                <Clock className="h-5 w-5 text-gray-600" />
-                <span>Pickup now</span>
-              </div>
-              <ChevronDown className="h-5 w-5 text-gray-600" />
+        <div className="flex flex-col h-full">
+          <div className="px-4 pt-4">
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100"
+            >
+              <X className="h-6 w-6" />
             </button>
+            <h1 className="text-2xl font-bold mb-6">Get a ride</h1>{" "}
+            <div className="space-y-4 pb-4">
+              {/* Pickup Input */}
+              <div className="relative">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                  <Circle className="h-5 w-5 text-gray-600" />
+                </div>
+                <input
+                  type="text"
+                  value={pickup}
+                  onChange={(e) => setPickup(e.target.value)}
+                  onFocus={() => {
+                    setActiveInput("pickup");
+                    setIsSearchMode(true);
+                  }}
+                  placeholder="Pickup location"
+                  className="w-full bg-gray-100 p-4 pl-12 rounded-lg focus:outline-none"
+                />
+              </div>
 
-            {pickup && dropoff && (
-              <button
-                onClick={onClose}
-                className="w-full bg-black text-white p-4 rounded-lg mt-4 font-medium"
-              >
-                Search
+              {/* Dropoff Input */}
+              <div className="relative">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                  <Square className="h-5 w-5 text-gray-600" />
+                </div>
+                <input
+                  type="text"
+                  value={dropoff}
+                  onChange={(e) => setDropoff(e.target.value)}
+                  onFocus={() => {
+                    setActiveInput("dropoff");
+                    setIsSearchMode(true);
+                  }}
+                  placeholder="Dropoff location"
+                  className="w-full bg-gray-100 p-4 pl-12 rounded-lg focus:outline-none"
+                />
+              </div>
+
+              {/* Time Selector */}
+              <button className="w-full flex items-center justify-between p-4 bg-gray-100 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <Clock className="h-5 w-5 text-gray-600" />
+                  <span>Pickup now</span>
+                </div>
+                <ChevronDown className="h-5 w-5 text-gray-600" />
               </button>
-            )}
+
+              {/* Search Button */}
+              {pickup && dropoff && (
+                <button
+                  onClick={handleSearch}
+                  className="w-full bg-black text-white p-4 rounded-lg font-medium"
+                >
+                  Search
+                </button>
+              )}
+            </div>
           </div>
         </div>
       ) : (
-        // Search Mode View
         <div className="h-full">
           {/* Search Header */}
           <div className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200">
@@ -164,7 +169,9 @@ export const LocationsPanel = ({
                       ? setPickup(e.target.value)
                       : setDropoff(e.target.value)
                   }
-                  placeholder={`Enter ${activeInput === "pickup" ? "pickup" : "dropoff"} location`}
+                  placeholder={`Enter ${
+                    activeInput === "pickup" ? "pickup" : "dropoff"
+                  } location`}
                   className="w-full bg-gray-100 p-3 pr-10 rounded-lg focus:outline-none"
                   autoFocus
                 />

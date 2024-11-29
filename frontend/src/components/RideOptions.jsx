@@ -2,13 +2,16 @@ import React from "react";
 import { Clock, User } from "lucide-react";
 import { rides } from "../../constants/data";
 
-const RideOptions = ({ pickup, dropoff }) => {
+const RideOptions = ({ pickup, dropoff, onBack }) => {
   return (
     <div className="fixed inset-0 bg-white z-50 flex flex-col">
       {/* Header with route info */}
       <div className="bg-white p-4 border-b">
         <div className="flex items-center justify-between mb-4">
-          <button className="p-2 hover:bg-gray-100 rounded-full">
+          <button
+            className="p-2 hover:bg-gray-100 rounded-full"
+            onClick={onBack}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6"
