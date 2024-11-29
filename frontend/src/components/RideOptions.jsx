@@ -5,6 +5,8 @@ import RideConfirmation from "./RideConfirmation";
 
 const RideOptions = ({ pickup, dropoff, onBack }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [selectedRide, setSelectedRide] = useState(rides[3]); // Default to Connect Auto
+
   if (showConfirmation) {
     return (
       <RideConfirmation
@@ -14,11 +16,16 @@ const RideOptions = ({ pickup, dropoff, onBack }) => {
       />
     );
   }
+
+  const handleRideSelect = (ride) => {
+    setSelectedRide(ride);
+  };
+
   return (
     <div className="fixed inset-0 bg-white z-50 flex flex-col">
-      {/* Header with route info */}
-      <div className="bg-white p-4 border-b">
-        <div className="flex items-center justify-between mb-4">
+      {/* Header */}
+      <div className="bg-white p-4">
+        <div className="flex items-center justify-between mb-2">
           <button
             className="p-2 hover:bg-gray-100 rounded-full"
             onClick={onBack}
@@ -38,33 +45,41 @@ const RideOptions = ({ pickup, dropoff, onBack }) => {
               />
             </svg>
           </button>
-          <div className="flex items-center space-x-2">
-            <Clock className="h-5 w-5" />
-            <span>Pickup now</span>
-            <User className="h-5 w-5" />
-            <span>For me</span>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-1">
+              <Clock className="h-5 w-5" />
+              <span>Pickup now</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <User className="h-5 w-5" />
+              <span>For me</span>
+            </div>
           </div>
-        </div>
-        <div className="text-sm">
-          <div className="font-medium">To: {dropoff}</div>
-          <div className="text-gray-500">From: {pickup}</div>
         </div>
       </div>
 
-      {/* Promotion banner */}
-      <div className="bg-green-50 p-3 flex items-center">
-        <span className="text-green-600 text-sm">🎉 8% promotion applied</span>
+      <div className="bg-green-50 p-2 border-y border-green-100">
+        <span className="text-green-700 text-sm">23% promotion applied</span>
       </div>
 
       {/* Ride options */}
-      <div className="flex-1 overflow-auto p-4 space-y-4">
+      <div className="flex-1 overflow-auto px-4">
         {rides.map((ride) => (
           <div
             key={ride.id}
-            className="flex items-center justify-between p-4 border rounded-lg hover:border-black cursor-pointer"
+            onClick={() => handleRideSelect(ride)}
+            className={`py-4 border-b last:border-b-0 flex items-center justify-between cursor-pointer ${
+              selectedRide.id === ride.id
+                ? "border-2 border-black rounded-lg my-2 p-2"
+                : ""
+            }`}
           >
             <div className="flex items-center space-x-4">
-              <img src={ride.icon} alt={ride.name} className="w-16 h-12 object-cover rounded-lg" />
+              <img
+                src={ride.icon}
+                alt={ride.name}
+                className="w-12 h-12 object-contain"
+              />
               <div>
                 <div className="flex items-center space-x-2">
                   <h3 className="font-medium">{ride.name}</h3>
@@ -74,12 +89,12 @@ const RideOptions = ({ pickup, dropoff, onBack }) => {
               </div>
             </div>
             <div className="text-right">
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center justify-end space-x-1">
                 <span className="text-green-600 text-sm">↓</span>
-                <span className="font-medium">₹{ride.price.toFixed(2)}</span>
+                <span className="font-medium">₹{ride.price}</span>
               </div>
               <span className="text-sm text-gray-500 line-through">
-                ₹{ride.originalPrice.toFixed(2)}
+                ₹{ride.originalPrice}
               </span>
             </div>
           </div>
@@ -112,7 +127,7 @@ const RideOptions = ({ pickup, dropoff, onBack }) => {
           className="w-full bg-black text-white py-3 rounded-lg font-medium"
           onClick={() => setShowConfirmation(true)}
         >
-          Request Connect Go Auto
+          Request {selectedRide.name}
         </button>
       </div>
     </div>
