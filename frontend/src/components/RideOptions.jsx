@@ -1,8 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { Clock, User } from "lucide-react";
 import { rides } from "../../constants/data";
+import RideConfirmation from "./RideConfirmation";
 
 const RideOptions = ({ pickup, dropoff, onBack }) => {
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  if (showConfirmation) {
+    return (
+      <RideConfirmation
+        pickup={pickup}
+        dropoff={dropoff}
+        onCancel={() => setShowConfirmation(false)}
+      />
+    );
+  }
   return (
     <div className="fixed inset-0 bg-white z-50 flex flex-col">
       {/* Header with route info */}
@@ -97,8 +108,11 @@ const RideOptions = ({ pickup, dropoff, onBack }) => {
             />
           </svg>
         </div>
-        <button className="w-full bg-black text-white py-3 rounded-lg font-medium">
-          Request Connect Go
+        <button
+          className="w-full bg-black text-white py-3 rounded-lg font-medium"
+          onClick={() => setShowConfirmation(true)}
+        >
+          Request Connect Go Auto
         </button>
       </div>
     </div>
