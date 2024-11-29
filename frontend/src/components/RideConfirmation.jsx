@@ -36,7 +36,16 @@ const RideConfirmation = ({ pickup, dropoff, onCancel }) => {
         </div>
 
         <div className="bg-white p-4 space-y-4">
-          <h2 className="text-xl font-medium">Looking for nearby drivers</h2>
+          {/* Header with Search Status and Cancel Button for Desktop */}
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-xl font-medium">Looking for nearby drivers</h2>
+            <button
+              onClick={() => setShowCancelConfirm(true)}
+              className="hidden md:block text-red-500 hover:text-red-600 font-medium"
+            >
+              Cancel
+            </button>
+          </div>
 
           <div className="w-full h-1 bg-gray-100 rounded-full overflow-hidden">
             <div className="h-full w-1/3 bg-blue-500 animate-[loading_2s_ease-in-out_infinite]"></div>
@@ -63,7 +72,39 @@ const RideConfirmation = ({ pickup, dropoff, onCancel }) => {
               </div>
             </div>
           </div>
+
+          {/* Cancel Button for Mobile */}
+          <button
+            onClick={() => setShowCancelConfirm(true)}
+            className="w-full py-3 bg-gray-100 text-red-500 rounded-lg md:hidden"
+          >
+            Cancel Search
+          </button>
         </div>
+
+        {/* Cancel Confirmation Modal */}
+        {showCancelConfirm && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center">
+            <div className="bg-white w-full md:w-[400px] md:rounded-xl rounded-t-xl p-4 space-y-4">
+              <h3 className="text-lg font-medium">{cancelMessages.title}</h3>
+              <p className="text-gray-600">{cancelMessages.description}</p>
+              <div className="space-y-2">
+                <button
+                  onClick={onCancel}
+                  className="w-full py-3 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                >
+                  {cancelMessages.buttons.confirm}
+                </button>
+                <button
+                  onClick={() => setShowCancelConfirm(false)}
+                  className="w-full py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                >
+                  {cancelMessages.buttons.reject}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
