@@ -7,13 +7,11 @@ import UserContextProvider from "./context/userContext.jsx";
 import CaptainContextProvider from "./context/CaptainContext.jsx";
 
 createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <CaptainContextProvider>
-      <UserContextProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </UserContextProvider>
-    </CaptainContextProvider>
-  </React.StrictMode>
+  <CaptainContextProvider>
+    <UserContextProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </UserContextProvider>
+  </CaptainContextProvider>
 );

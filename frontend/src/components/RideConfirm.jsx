@@ -1,8 +1,18 @@
-// components/RideConfirm.jsx
-import React from "react";
+import React, { useCallback } from "react";
 import { MapPin, ArrowLeft, Clock } from "lucide-react";
 
 const RideConfirm = ({ selectedRide, pickup, onNext, onBack }) => {
+  const handleBackClick = useCallback(
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof onBack === "function") {
+        onBack();
+      }
+    },
+    [onBack]
+  );
+
   return (
     <div className="fixed inset-0 bg-gray-50 z-50 flex flex-col">
       {/* Map Area */}
@@ -11,8 +21,9 @@ const RideConfirm = ({ selectedRide, pickup, onNext, onBack }) => {
         <div className="absolute top-0 left-0 right-0 p-4 flex items-center justify-between">
           {/* Back Button with white circular background */}
           <button
-            onClick={onBack}
-            className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg"
+            type="button"
+            onClick={handleBackClick}
+            className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-100 transition-colors cursor-pointer z-50"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
@@ -90,13 +101,15 @@ const RideConfirm = ({ selectedRide, pickup, onNext, onBack }) => {
               <span className="text-xl">💵</span>
               <span className="font-medium text-lg">Cash</span>
             </div>
-            <button className="text-blue-600 font-medium">Change</button>
+            <button className="text-blue-600 font-medium hover:text-blue-800 transition-colors cursor-pointer">
+              Change
+            </button>
           </div>
 
           {/* Confirm Button */}
           <button
             onClick={onNext}
-            className="w-full bg-[#4CAF50] hover:bg-[#45a049] text-white py-4 rounded-xl text-lg font-medium transition-colors"
+            className="w-full bg-[#4CAF50] hover:bg-[#45a049] text-white py-4 rounded-xl text-lg font-medium transition-colors cursor-pointer"
           >
             Confirm
           </button>

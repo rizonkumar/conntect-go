@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Clock, User } from "lucide-react";
 import { rides } from "../../constants/data";
 import RideConfirmation from "./RideConfirmation";
@@ -8,6 +8,18 @@ const RideOptions = ({ pickup, dropoff, onBack }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [selectedRide, setSelectedRide] = useState(rides[3]); // Default to Connect Auto
+
+  // Use useCallback to maintain function reference
+  const handleBackFromRides = useCallback(() => {
+    console.log("Back from rides called");
+    setShowConfirm(false);
+  }, []);
+
+  console.log("RideOptions rendered with state:", { showConfirmation, showConfirm, selectedRide });
+
+  const handleRideSelect = (ride) => {
+    setSelectedRide(ride);
+  };
 
   if (showConfirmation) {
     return (
@@ -20,6 +32,7 @@ const RideOptions = ({ pickup, dropoff, onBack }) => {
   }
 
   if (showConfirm) {
+    console.log("Rendering RideConfirm with handleBackFromRides:", handleBackFromRides);
     return (
       <RideConfirm
         selectedRide={selectedRide}
@@ -28,14 +41,10 @@ const RideOptions = ({ pickup, dropoff, onBack }) => {
           setShowConfirm(false);
           setShowConfirmation(true);
         }}
-        onBack={() => setShowConfirm(false)}
+        onBack={handleBackFromRides}
       />
     );
   }
-
-  const handleRideSelect = (ride) => {
-    setSelectedRide(ride);
-  };
 
   return (
     <div className="fixed inset-0 bg-white z-50 flex flex-col">
