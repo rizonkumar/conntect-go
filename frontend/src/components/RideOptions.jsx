@@ -64,7 +64,7 @@ const RideOptions = ({ pickup, dropoff, onBack }) => {
             className="flex items-center justify-between p-4 border rounded-lg hover:border-black cursor-pointer"
           >
             <div className="flex items-center space-x-4">
-              <span className="text-2xl">{ride.icon}</span>
+              <img src={ride.icon} alt={ride.name} className="w-16 h-12 object-cover rounded-lg" />
               <div>
                 <div className="flex items-center space-x-2">
                   <h3 className="font-medium">{ride.name}</h3>
