@@ -1,8 +1,12 @@
 import React from "react";
 import { Power, Circle, Square, CreditCard, ArrowLeft } from "lucide-react";
-import { rideRequests } from "../../../constants/data";
+import { rideRequests, rideDetails } from "../../../constants/data";
 
-const RideRequests = ({ onBack }) => {
+const RideRequest = ({ onBack, onToggleOnline, isOnline, onAcceptRide }) => {
+  const handleAcceptRide = () => {
+    // Pass the rideDetails when accepting a ride
+    onAcceptRide(rideDetails);
+  };
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -10,7 +14,7 @@ const RideRequests = ({ onBack }) => {
         <div className="flex items-center gap-2">
           <button
             onClick={onBack}
-            className="p-1 hover:bg-gray-800 rounded-full"
+            className="p-1 hover:bg-gray-800 rounded-full transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
@@ -22,7 +26,12 @@ const RideRequests = ({ onBack }) => {
         </div>
         <div className="flex items-center gap-3">
           <label className="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" checked className="sr-only peer" />
+            <input
+              type="checkbox"
+              checked={isOnline}
+              onChange={onToggleOnline}
+              className="sr-only peer"
+            />
             <div className="w-11 h-6 bg-green-500 peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
           </label>
         </div>
@@ -99,7 +108,10 @@ const RideRequests = ({ onBack }) => {
               </div>
 
               {/* Action Button */}
-              <button className="w-full bg-yellow-400 p-3 font-medium hover:bg-yellow-500 transition-colors">
+              <button
+                className="w-full bg-yellow-400 p-3 font-medium hover:bg-yellow-500 transition-colors"
+                onClick={handleAcceptRide}
+              >
                 Accept
               </button>
             </div>
@@ -110,4 +122,4 @@ const RideRequests = ({ onBack }) => {
   );
 };
 
-export default RideRequests;
+export default RideRequest;

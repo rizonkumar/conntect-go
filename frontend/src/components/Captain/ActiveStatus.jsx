@@ -11,13 +11,25 @@ import {
 } from "lucide-react";
 import { activeRideRequest } from "../../../constants/data";
 
-const ActiveStatus = ({ onIgnore }) => {
+const ActiveStatus = ({ onIgnore, onToggleOnline, isOnline, onAcceptRide }) => {
   const { passenger, ride } = activeRideRequest;
 
-  const handleIgnore = () => {
-    if (onIgnore) {
-      onIgnore();
-    }
+  const handleAcceptRide = () => {
+    const formattedRide = {
+      passenger: {
+        name: passenger.name,
+        image: passenger.image,
+        paymentMethod: passenger.paymentMethod,
+        hasDiscount: passenger.hasDiscount,
+      },
+      pickup: ride.pickup,
+      dropoff: ride.dropoff,
+      fare: ride.fare,
+      distance: ride.distance,
+      notes: "",
+      payments: [{ label: passenger.paymentMethod, amount: ride.fare }],
+    };
+    onAcceptRide(formattedRide);
   };
 
   return (
@@ -32,9 +44,13 @@ const ActiveStatus = ({ onIgnore }) => {
           <span className="font-medium">Online</span>
         </div>
         <div className="flex items-center gap-3">
-          <Clock className="h-5 w-5" />
           <label className="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" checked className="sr-only peer" />
+            <input
+              type="checkbox"
+              checked={isOnline}
+              onChange={onToggleOnline}
+              className="sr-only peer"
+            />
             <div className="w-11 h-6 bg-green-500 peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
           </label>
         </div>
@@ -113,13 +129,16 @@ const ActiveStatus = ({ onIgnore }) => {
           {/* Action Buttons */}
           <div className="flex gap-4 pt-2">
             <button
-              onClick={handleIgnore}
+              onClick={onIgnore}
               className="flex-1 py-4 bg-gray-100 rounded-xl font-medium hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
             >
               <ThumbsDown className="h-5 w-5" />
               <span>Ignore</span>
             </button>
-            <button className="flex-1 py-4 bg-yellow-400 rounded-xl font-medium hover:bg-yellow-500 transition-colors flex items-center justify-center gap-2">
+            <button
+              onClick={handleAcceptRide}
+              className="flex-1 py-4 bg-yellow-400 rounded-xl font-medium hover:bg-yellow-500 transition-colors flex items-center justify-center gap-2"
+            >
               <ThumbsUp className="h-5 w-5" />
               <span>Accept</span>
             </button>

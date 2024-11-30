@@ -1,17 +1,25 @@
 import React, { useState } from "react";
 import InactiveStatus from "../components/Captain/InactiveStatus";
-import { captainStats } from "../../constants/data";
+import { captainStats, rideDetails } from "../../constants/data";
 import ActiveStatus from "../components/Captain/ActiveStatus";
-import RideRequests from "../components/Captain/RideRequests";
+import RideRequest from "../components/Captain/RideRequest";
+import AcceptedRideDetails from "../components/Captain/AcceptedRideDetails";
+import PickupContainer from "../components/Captain/PickupContainer";
 
 const CaptainHome = () => {
   const [isOnline, setIsOnline] = useState(false);
   const [showRideRequests, setShowRideRequests] = useState(false);
-
-  console.log("showRideRequests", showRideRequests);
+  const [acceptedRide, setAcceptedRide] = useState(null);
+  const [showPickup, setShowPickup] = useState(false);
 
   const handleGoOnline = () => {
     setIsOnline(true);
+  };
+
+  const handleGoOffline = () => {
+    setIsOnline(false);
+    setShowRideRequests(false);
+    setAcceptedRide(null);
   };
 
   const handleIgnoreRide = () => {
@@ -22,6 +30,20 @@ const CaptainHome = () => {
     setShowRideRequests(false);
   };
 
+  const handleAcceptRide = (ride) => {
+    setAcceptedRide(ride);
+    setShowRideRequests(false);
+  };
+
+  const handleCancelRide = () => {
+    setAcceptedRide(null);
+    setShowPickup(false);
+  };
+
+  const handleGoToPickup = () => {
+    setShowPickup(true); // Show pickup screen
+  };
+
   return (
     <div>
       {/* Component for When Captain Status is inactive */}
@@ -29,16 +51,40 @@ const CaptainHome = () => {
         <InactiveStatus {...captainStats} onGoOnline={handleGoOnline} />
       )}
       {/* Component for When Captain Status is active with Accept and Ignore Rides */}
-      {isOnline && !showRideRequests && (
-        <ActiveStatus onIgnore={handleIgnoreRide} />
+      {isOnline && !showRideRequests && !acceptedRide && !showPickup && (
+        <ActiveStatus
+          onIgnore={handleIgnoreRide}
+          onToggleOnline={handleGoOffline}
+          isOnline={isOnline}
+          onAcceptRide={handleAcceptRide}
+        />
       )}
       {/* Component when captain ignore the ride we will show all incoming rides request with Accept and Ignore Button - All Rides in List format */}
-      {showRideRequests && <RideRequests onBack={handleBackFromRequests} />}
+      {showRideRequests && (
+        <RideRequest
+          onBack={handleBackFromRequests}
+          onToggleOnline={handleGoOffline}
+          isOnline={isOnline}
+          onAcceptRide={handleAcceptRide}
+        />
+      )}
 
-      {/* Component when captain accept the ride  with go to pick up component*/}
+      {/* Component when captain accept the ride  - Accept Detail Component (better naming can be done) and in that component we have a button GoToPickUp as well. Note: THe Button will be seperate component... we will do next..*/}
 
-      {/* Pickup Component with Map */}
-      {/* Pickup component when capatin scroll up - we will hide the map and show the other detail like pickup at, ETA, DIStance and Fare, Dropoff button and location suggestion */}
+      {acceptedRide && !showPickup && (
+        <AcceptedRideDetails
+          rideDetails={acceptedRide}
+          onCancel={handleCancelRide}
+          onGoToPickup={handleGoToPickup}
+        />
+      )}
+
+      {showPickup && acceptedRide && (
+        <PickupContainer
+          pickup={acceptedRide.pickup}
+          onBack={() => setShowPickup(false)}
+        />
+      )}
     </div>
   );
 };
