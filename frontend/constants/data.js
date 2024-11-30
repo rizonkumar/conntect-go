@@ -120,3 +120,41 @@ export const rides = [
     icon: "https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1648431773/assets/1d/db8c56-0204-4ce4-81ce-56a11a07fe98/original/Uber_Auto_558x372_pixels_Desktop.png",
   },
 ];
+
+export const activeRideData = {
+  driver: {
+    name: "Rahul Kumar",
+    rating: 4.8,
+    image: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400",
+    phone: "+91 98765 43210",
+    vehicleNumber: "KA 01 AB 1234",
+    vehicleModel: "Honda City",
+    vehicleColor: "White",
+  },
+  trip: {
+    pickup: "Indiranagar Metro Station",
+    dropoff: "Koramangala 5th Block",
+    distance: "5.2 km",
+    duration: "22 mins",
+    fare: 249,
+    status: "ongoing", // can be 'arriving', 'ongoing', 'completed'
+    eta: "12:45 PM",
+  },
+  paymentOptions: [
+    {
+      id: "cash",
+      name: "Cash",
+      icon: "💵",
+    },
+    {
+      id: "upi",
+      name: "UPI",
+      icon: "📱",
+    },
+    {
+      id: "card",
+      name: "Credit/Debit Card",
+      icon: "💳",
+    },
+  ],
+};
