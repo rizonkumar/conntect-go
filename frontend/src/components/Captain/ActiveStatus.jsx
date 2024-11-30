@@ -11,8 +11,14 @@ import {
 } from "lucide-react";
 import { activeRideRequest } from "../../../constants/data";
 
-const ActiveStatus = () => {
+const ActiveStatus = ({ onIgnore }) => {
   const { passenger, ride } = activeRideRequest;
+
+  const handleIgnore = () => {
+    if (onIgnore) {
+      onIgnore();
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -106,7 +112,10 @@ const ActiveStatus = () => {
 
           {/* Action Buttons */}
           <div className="flex gap-4 pt-2">
-            <button className="flex-1 py-4 bg-gray-100 rounded-xl font-medium hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">
+            <button
+              onClick={handleIgnore}
+              className="flex-1 py-4 bg-gray-100 rounded-xl font-medium hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+            >
               <ThumbsDown className="h-5 w-5" />
               <span>Ignore</span>
             </button>

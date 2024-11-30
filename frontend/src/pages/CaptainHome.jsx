@@ -2,12 +2,24 @@ import React, { useState } from "react";
 import InactiveStatus from "../components/Captain/InactiveStatus";
 import { captainStats } from "../../constants/data";
 import ActiveStatus from "../components/Captain/ActiveStatus";
+import RideRequests from "../components/Captain/RideRequests";
 
 const CaptainHome = () => {
   const [isOnline, setIsOnline] = useState(false);
+  const [showRideRequests, setShowRideRequests] = useState(false);
+
+  console.log("showRideRequests", showRideRequests);
 
   const handleGoOnline = () => {
     setIsOnline(true);
+  };
+
+  const handleIgnoreRide = () => {
+    setShowRideRequests(true);
+  };
+
+  const handleBackFromRequests = () => {
+    setShowRideRequests(false);
   };
 
   return (
@@ -17,8 +29,11 @@ const CaptainHome = () => {
         <InactiveStatus {...captainStats} onGoOnline={handleGoOnline} />
       )}
       {/* Component for When Captain Status is active with Accept and Ignore Rides */}
-      {isOnline && <ActiveStatus />}
+      {isOnline && !showRideRequests && (
+        <ActiveStatus onIgnore={handleIgnoreRide} />
+      )}
       {/* Component when captain ignore the ride we will show all incoming rides request with Accept and Ignore Button - All Rides in List format */}
+      {showRideRequests && <RideRequests onBack={handleBackFromRequests} />}
 
       {/* Component when captain accept the ride  with go to pick up component*/}
 
