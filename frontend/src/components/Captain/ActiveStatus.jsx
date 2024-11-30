@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   MapPin,
   Circle,
@@ -10,11 +10,19 @@ import {
   ThumbsDown,
 } from "lucide-react";
 import { activeRideRequest } from "../../../constants/data";
+import RideConfirmationCaptain from "./RideConfirmationCaptain";
 
 const ActiveStatus = ({ onIgnore, onToggleOnline, isOnline, onAcceptRide }) => {
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const { passenger, ride } = activeRideRequest;
 
-  const handleAcceptRide = () => {
+  console.log("Confirmation:", showConfirmation);
+
+  const handleAccept = () => {
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmRide = () => {
     const formattedRide = {
       passenger: {
         name: passenger.name,
@@ -31,6 +39,21 @@ const ActiveStatus = ({ onIgnore, onToggleOnline, isOnline, onAcceptRide }) => {
     };
     onAcceptRide(formattedRide);
   };
+
+  if (showConfirmation) {
+    return (
+      <RideConfirmationCaptain
+        passenger={passenger}
+        pickup={ride.pickup.address}
+        dropoff={ride.dropoff.address}
+        fare={ride.fare}
+        distance={ride.distance}
+        expectedOTP="1234" // This should come from your backend
+        onConfirm={handleConfirmRide}
+        onCancel={() => setShowConfirmation(false)}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -136,7 +159,7 @@ const ActiveStatus = ({ onIgnore, onToggleOnline, isOnline, onAcceptRide }) => {
               <span>Ignore</span>
             </button>
             <button
-              onClick={handleAcceptRide}
+              onClick={handleAccept}
               className="flex-1 py-4 bg-yellow-400 rounded-xl font-medium hover:bg-yellow-500 transition-colors flex items-center justify-center gap-2"
             >
               <ThumbsUp className="h-5 w-5" />

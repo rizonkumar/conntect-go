@@ -4,7 +4,14 @@ import { MapPin, Clock, DollarSign } from "lucide-react";
 import RideComplete from "./RideComplete";
 import RideCompleted from "./RideCompleted";
 
-const PickupDetails = ({ pickup, eta, distance, fare, directions }) => {
+const PickupDetails = ({
+  pickup,
+  eta,
+  distance,
+  fare,
+  directions,
+  onFindNewRides,
+}) => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showCompleted, setShowCompleted] = useState(false);
 
@@ -91,7 +98,12 @@ const PickupDetails = ({ pickup, eta, distance, fare, directions }) => {
 
       {/* Then show completed screen */}
       {showCompleted && (
-        <RideCompleted fare={fare} duration={25} distance={distance} />
+        <RideCompleted
+          fare={fare}
+          duration={25}
+          distance={distance}
+          onFindNewRides={onFindNewRides}
+        />
       )}
     </div>
   );

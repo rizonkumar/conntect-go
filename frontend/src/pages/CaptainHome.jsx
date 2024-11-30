@@ -41,7 +41,14 @@ const CaptainHome = () => {
   };
 
   const handleGoToPickup = () => {
-    setShowPickup(true); // Show pickup screen
+    setShowPickup(true);
+  };
+
+  const handleFindNewRides = () => {
+    setIsOnline(false);
+    setShowRideOptions(false);
+    setAcceptedRide(null);
+    setShowPickup(false);
   };
 
   return (
@@ -83,6 +90,7 @@ const CaptainHome = () => {
         <PickupContainer
           pickup={acceptedRide.pickup}
           onBack={() => setShowPickup(false)}
+          onFindNewRides={handleFindNewRides}
         />
       )}
     </div>
