@@ -1,7 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { MapPin, Clock, DollarSign } from "lucide-react";
+import RideComplete from "./RideComplete";
 
 const PickupDetails = ({ pickup, eta, distance, fare, directions }) => {
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+
+  const handleDropOff = () => {
+    setShowPaymentModal(true);
+  };
+
+  const handlePaymentComplete = (paymentMethod) => {
+    console.log("Payment completed with:", paymentMethod);
+    setShowPaymentModal(false);
+    // You might want to redirect to a confirmation screen or home screen here
+  };
   return (
     <div className="fixed inset-0 bg-white z-50">
       {/* Header */}
@@ -57,10 +69,22 @@ const PickupDetails = ({ pickup, eta, distance, fare, directions }) => {
       </div>
 
       <div className="p-4 border-t bg-white">
-        <button className="w-full bg-black text-white py-4 rounded-lg font-medium">
+        <button
+          className="w-full bg-black text-white py-4 rounded-lg font-medium"
+          onClick={handleDropOff}
+        >
           DROP OFF
         </button>
       </div>
+
+      {/* Payment Modal */}
+      {showPaymentModal && (
+        <RideComplete
+          fare={fare}
+          onClose={() => setShowPaymentModal(false)}
+          onComplete={handlePaymentComplete}
+        />
+      )}
     </div>
   );
 };

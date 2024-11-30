@@ -1,7 +1,7 @@
 import React from "react";
 import { ArrowLeft } from "lucide-react";
 
-const PickupMap = ({ pickup, onBack, distance }) => {
+const PickupMap = ({ pickup, onBack, distance, instruction }) => {
   return (
     <div className="fixed inset-0 bg-white z-50">
       {/* Header */}
@@ -16,8 +16,8 @@ const PickupMap = ({ pickup, onBack, distance }) => {
       <div className="bg-orange-500 text-white px-4 py-2 flex items-center gap-2">
         <span className="rotate-90">↱</span>
         <div className="flex-1">
-          <span className="mr-2">{distance}m</span>
-          <span>Turn right at {pickup.address}</span>
+          <span className="mr-2">{distance}</span>
+          <span>{instruction}</span>
         </div>
       </div>
 

@@ -1,6 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
+// PickupContainer.jsx
+import React, { useState, useRef } from "react";
+import { ChevronUp, ChevronDown } from "lucide-react"; // Import both icons
 import PickupMap from "./PickupMap";
 import PickupDetails from "./PickupDetails";
+import { pickupDirections } from "../../../constants/data";
 
 const PickupContainer = ({ pickup, onBack }) => {
   const [showDetails, setShowDetails] = useState(false);
@@ -20,37 +23,52 @@ const PickupContainer = ({ pickup, onBack }) => {
     }
   };
 
-  const directions = [
-    {
-      instruction: "Head southwest on Madison St",
-      distance: "18",
-      icon: "↑",
-    },
-    {
-      instruction: "Turn left onto 4th Ave",
-      distance: "12",
-      icon: "↰",
-    },
-    // ... add more directions
-  ];
+  const toggleDetails = () => {
+    setShowDetails(!showDetails);
+  };
 
   return (
     <div
       ref={containerRef}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
-      className="h-screen overflow-hidden"
+      className="h-screen overflow-hidden relative"
     >
       {!showDetails ? (
-        <PickupMap pickup={pickup} onBack={onBack} distance={250} />
+        <div className="relative h-full">
+          <PickupMap
+            pickup={pickup}
+            onBack={onBack}
+            distance={pickupDirections.currentLocation.distance}
+            instruction={pickupDirections.currentLocation.instruction}
+          />
+          <div className="fixed bottom-32 left-0 right-0 z-[60] hidden md:block">
+            <button
+              onClick={toggleDetails}
+              className="mx-auto flex items-center justify-center bg-white rounded-full w-12 h-12 shadow-lg hover:bg-gray-50 transition-colors"
+            >
+              <ChevronUp className="h-6 w-6" />
+            </button>
+          </div>
+        </div>
       ) : (
-        <PickupDetails
-          pickup={pickup}
-          eta={5}
-          distance={2.2}
-          fare={25.0}
-          directions={directions}
-        />
+        <>
+          <PickupDetails
+            pickup={pickup}
+            eta={pickupDirections.eta}
+            distance={pickupDirections.distance}
+            fare={pickupDirections.fare}
+            directions={pickupDirections.directions}
+          />
+          <div className="fixed top-20 left-0 right-0 z-[60] hidden md:block">
+            <button
+              onClick={toggleDetails}
+              className="mx-auto flex items-center justify-center bg-white rounded-full w-12 h-12 shadow-lg hover:bg-gray-50 transition-colors"
+            >
+              <ChevronDown className="h-6 w-6" />
+            </button>
+          </div>
+        </>
       )}
     </div>
   );
