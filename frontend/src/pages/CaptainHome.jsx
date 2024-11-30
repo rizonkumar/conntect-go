@@ -4,11 +4,13 @@ import { captainStats, rideDetails } from "../../constants/data";
 import ActiveStatus from "../components/Captain/ActiveStatus";
 import RideRequest from "../components/Captain/RideRequest";
 import AcceptedRideDetails from "../components/Captain/AcceptedRideDetails";
+import PickupContainer from "../components/Captain/PickupContainer";
 
 const CaptainHome = () => {
   const [isOnline, setIsOnline] = useState(false);
   const [showRideRequests, setShowRideRequests] = useState(false);
   const [acceptedRide, setAcceptedRide] = useState(null);
+  const [showPickup, setShowPickup] = useState(false);
 
   const handleGoOnline = () => {
     setIsOnline(true);
@@ -35,11 +37,11 @@ const CaptainHome = () => {
 
   const handleCancelRide = () => {
     setAcceptedRide(null);
+    setShowPickup(false);
   };
 
   const handleGoToPickup = () => {
-    // Handle the navigation to the pickup location
-    console.log("Navigating to pickup location");
+    setShowPickup(true); // Show pickup screen
   };
 
   return (
@@ -49,7 +51,7 @@ const CaptainHome = () => {
         <InactiveStatus {...captainStats} onGoOnline={handleGoOnline} />
       )}
       {/* Component for When Captain Status is active with Accept and Ignore Rides */}
-      {isOnline && !showRideRequests && !acceptedRide && (
+      {isOnline && !showRideRequests && !acceptedRide && !showPickup && (
         <ActiveStatus
           onIgnore={handleIgnoreRide}
           onToggleOnline={handleGoOffline}
@@ -69,7 +71,7 @@ const CaptainHome = () => {
 
       {/* Component when captain accept the ride  - Accept Detail Component (better naming can be done) and in that component we have a button GoToPickUp as well. Note: THe Button will be seperate component... we will do next..*/}
 
-      {acceptedRide && (
+      {acceptedRide && !showPickup && (
         <AcceptedRideDetails
           rideDetails={acceptedRide}
           onCancel={handleCancelRide}
@@ -77,9 +79,12 @@ const CaptainHome = () => {
         />
       )}
 
-      {/* Pickup Component with Map */}
-
-      {/* Pickup component when capatin scroll up - we will hide the map and show the other detail like pickup at, ETA, DIStance and Fare, Dropoff button and location suggestion */}
+      {showPickup && acceptedRide && (
+        <PickupContainer
+          pickup={acceptedRide.pickup}
+          onBack={() => setShowPickup(false)}
+        />
+      )}
     </div>
   );
 };

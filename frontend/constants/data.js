@@ -259,3 +259,68 @@ export const rideDetails = {
     { label: "Paid amount", amount: 25.0 },
   ],
 };
+
+export const pickupDirections = {
+  currentLocation: {
+    distance: "250m",
+    instruction: "Turn right at 105 William St, Chicago, US",
+  },
+  destination: {
+    address: "7958 Swift Village",
+    coordinates: [40.7128, -74.006],
+  },
+  mapImage: "https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif",
+  eta: "5",
+  distance: "2.2",
+  fare: "25.00",
+  directions: [
+    {
+      id: 1,
+      instruction: "Head southwest on Madison St",
+      distance: "18",
+      icon: "↑",
+    },
+    {
+      id: 2,
+      instruction: "Turn left onto 4th Ave",
+      distance: "12",
+      icon: "↰",
+    },
+    {
+      id: 3,
+      instruction: "Turn right at 105th N Link Rd",
+      distance: "40",
+      icon: "↱",
+      note: "Pass by Executive Hotel Pacific (on the left)",
+    },
+    {
+      id: 4,
+      instruction: "Turn right at 105 William St, Chicago, US",
+      distance: "250",
+      icon: "↱",
+    },
+    {
+      id: 5,
+      instruction: "Continue straight to stay on Vancouver",
+      distance: "24",
+      icon: "↑",
+      note: "Entering California",
+    },
+    {
+      id: 6,
+      instruction: "Keep left, follow signs for SF Intl Airport",
+      distance: "15",
+      icon: "↰",
+    },
+  ],
+  navigationMarkers: {
+    source: {
+      type: "circle",
+      color: "gray",
+    },
+    destination: {
+      type: "square",
+      color: "black",
+    },
+  },
+};
