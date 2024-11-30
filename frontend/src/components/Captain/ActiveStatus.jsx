@@ -11,8 +11,26 @@ import {
 } from "lucide-react";
 import { activeRideRequest } from "../../../constants/data";
 
-const ActiveStatus = ({ onIgnore, onToggleOnline, isOnline }) => {
+const ActiveStatus = ({ onIgnore, onToggleOnline, isOnline, onAcceptRide }) => {
   const { passenger, ride } = activeRideRequest;
+
+  const handleAcceptRide = () => {
+    const formattedRide = {
+      passenger: {
+        name: passenger.name,
+        image: passenger.image,
+        paymentMethod: passenger.paymentMethod,
+        hasDiscount: passenger.hasDiscount,
+      },
+      pickup: ride.pickup,
+      dropoff: ride.dropoff,
+      fare: ride.fare,
+      distance: ride.distance,
+      notes: "",
+      payments: [{ label: passenger.paymentMethod, amount: ride.fare }],
+    };
+    onAcceptRide(formattedRide);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -117,7 +135,10 @@ const ActiveStatus = ({ onIgnore, onToggleOnline, isOnline }) => {
               <ThumbsDown className="h-5 w-5" />
               <span>Ignore</span>
             </button>
-            <button className="flex-1 py-4 bg-yellow-400 rounded-xl font-medium hover:bg-yellow-500 transition-colors flex items-center justify-center gap-2">
+            <button
+              onClick={handleAcceptRide}
+              className="flex-1 py-4 bg-yellow-400 rounded-xl font-medium hover:bg-yellow-500 transition-colors flex items-center justify-center gap-2"
+            >
               <ThumbsUp className="h-5 w-5" />
               <span>Accept</span>
             </button>

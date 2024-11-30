@@ -5,22 +5,6 @@ import ActiveStatus from "../components/Captain/ActiveStatus";
 import RideRequest from "../components/Captain/RideRequest";
 import AcceptedRideDetails from "../components/Captain/AcceptedRideDetails";
 
-/**
- * This component renders the home page for the captain.
- * It renders InactiveStatus, ActiveStatus, RideRequest, and AcceptedRideDetails components.
- * The states are:
- * - isOnline: boolean to indicate if the captain is online or not.
- * - showRideRequests: boolean to indicate if the captain is ignoring ride requests or not.
- * - acceptedRide: object that contains the details of the accepted ride.
- * The functions are:
- * - handleGoOnline: sets isOnline to true.
- * - handleGoOffline: sets isOnline to false, showRideRequests to false, and acceptedRide to null.
- * - handleIgnoreRide: sets showRideRequests to true.
- * - handleBackFromRequests: sets showRideRequests to false.
- * - handleAcceptRide: sets acceptedRide to the ride object and showRideRequests to false.
- * - handleCancelRide: sets acceptedRide to null.
- * - handleGoToPickup: logs a message to the console for now.
- */
 const CaptainHome = () => {
   const [isOnline, setIsOnline] = useState(false);
   const [showRideRequests, setShowRideRequests] = useState(false);
@@ -70,6 +54,7 @@ const CaptainHome = () => {
           onIgnore={handleIgnoreRide}
           onToggleOnline={handleGoOffline}
           isOnline={isOnline}
+          onAcceptRide={handleAcceptRide}
         />
       )}
       {/* Component when captain ignore the ride we will show all incoming rides request with Accept and Ignore Button - All Rides in List format */}
