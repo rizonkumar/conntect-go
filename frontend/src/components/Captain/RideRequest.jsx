@@ -1,8 +1,12 @@
 import React from "react";
 import { Power, Circle, Square, CreditCard, ArrowLeft } from "lucide-react";
-import { rideRequests } from "../../../constants/data";
+import { rideRequests, rideDetails } from "../../../constants/data";
 
-const RideRequest = ({ onBack, onToggleOnline, isOnline }) => {
+const RideRequest = ({ onBack, onToggleOnline, isOnline, onAcceptRide }) => {
+  const handleAcceptRide = () => {
+    // Pass the rideDetails when accepting a ride
+    onAcceptRide(rideDetails);
+  };
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -106,9 +110,7 @@ const RideRequest = ({ onBack, onToggleOnline, isOnline }) => {
               {/* Action Button */}
               <button
                 className="w-full bg-yellow-400 p-3 font-medium hover:bg-yellow-500 transition-colors"
-                onClick={() =>
-                  console.log(`Accepting ride for ${request.passenger.name}`)
-                }
+                onClick={handleAcceptRide}
               >
                 Accept
               </button>

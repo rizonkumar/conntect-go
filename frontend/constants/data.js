@@ -236,3 +236,26 @@ export const rideRequests = [
     },
   },
 ];
+
+export const rideDetails = {
+  passenger: {
+    name: "Esther Berry",
+    image: "path/to/image.jpg",
+    paymentMethod: "ApplePay",
+    hasDiscount: true,
+  },
+  pickup: {
+    address: "7958 Swift Village",
+  },
+  dropoff: {
+    address: "105 William St, Chicago, US",
+  },
+  fare: 25.0,
+  distance: "2.2",
+  notes: "Lorem ipsum dolor sit amet...",
+  payments: [
+    { label: "Apple Pay", amount: 15.0 },
+    { label: "Discount", amount: 10.0 },
+    { label: "Paid amount", amount: 25.0 },
+  ],
+};
