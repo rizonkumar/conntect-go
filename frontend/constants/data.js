@@ -120,3 +120,119 @@ export const rides = [
     icon: "https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1648431773/assets/1d/db8c56-0204-4ce4-81ce-56a11a07fe98/original/Uber_Auto_558x372_pixels_Desktop.png",
   },
 ];
+
+export const activeRideData = {
+  driver: {
+    name: "Rahul Kumar",
+    rating: 4.8,
+    image: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400",
+    phone: "+91 98765 43210",
+    vehicleNumber: "KA 01 AB 1234",
+    vehicleModel: "Honda City",
+    vehicleColor: "White",
+  },
+  trip: {
+    pickup: "Indiranagar Metro Station",
+    dropoff: "Koramangala 5th Block",
+    distance: "5.2 km",
+    duration: "22 mins",
+    fare: 249,
+    status: "ongoing", // can be 'arriving', 'ongoing', 'completed'
+    eta: "12:45 PM",
+  },
+  paymentOptions: [
+    {
+      id: "cash",
+      name: "Cash",
+      icon: "💵",
+    },
+    {
+      id: "upi",
+      name: "UPI",
+      icon: "📱",
+    },
+    {
+      id: "card",
+      name: "Credit/Debit Card",
+      icon: "💳",
+    },
+  ],
+};
+
+export const captainStats = {
+  totalHours: 10.2,
+  totalDistance: 30,
+  totalJobs: 20,
+  earnings: 325.0,
+  name: "Jeremiah Curtis",
+};
+
+export const activeRideRequest = {
+  passenger: {
+    name: "Esther Berry",
+    image: "https://randomuser.me/api/portraits/women/44.jpg",
+    paymentMethod: "ApplePay",
+    hasDiscount: true,
+  },
+  ride: {
+    fare: 25.0,
+    distance: 2.2,
+    pickup: {
+      address: "7958 Swift Village",
+      coordinates: [40.7128, -74.006], // Example coordinates
+    },
+    dropoff: {
+      address: "105 William St, Chicago, US",
+      coordinates: [40.7138, -74.007], // Example coordinates
+    },
+  },
+  mapImage: "https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif",
+};
+
+export const rideRequests = [
+  {
+    id: 1,
+    passenger: {
+      name: "Esther Berry",
+      image: "https://randomuser.me/api/portraits/women/44.jpg",
+      paymentMethod: "ApplePay",
+      hasDiscount: true,
+    },
+    ride: {
+      fare: 25.0,
+      distance: 2.2,
+      pickup: "7958 Swift Village",
+      dropoff: "105 William St, Chicago, US",
+    },
+  },
+  {
+    id: 2,
+    passenger: {
+      name: "Callie Greer",
+      image: "https://randomuser.me/api/portraits/women/28.jpg",
+      paymentMethod: "ApplePay",
+      hasDiscount: true,
+    },
+    ride: {
+      fare: 20.0,
+      distance: 1.5,
+      pickup: "62 Kobe Trafficway",
+      dropoff: "280 Icie Park Suite 496",
+    },
+  },
+  {
+    id: 3,
+    passenger: {
+      name: "Earl Guerrero",
+      image: "https://randomuser.me/api/portraits/men/45.jpg",
+      paymentMethod: "ApplePay",
+      hasDiscount: false,
+    },
+    ride: {
+      fare: 10.0,
+      distance: 0.5,
+      pickup: "9965 Soledad Ports",
+      dropoff: "742 Ridge Park Avenue",
+    },
+  },
+];
