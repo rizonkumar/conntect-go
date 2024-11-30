@@ -11,14 +11,8 @@ import {
 } from "lucide-react";
 import { activeRideRequest } from "../../../constants/data";
 
-const ActiveStatus = ({ onIgnore }) => {
+const ActiveStatus = ({ onIgnore, onToggleOnline, isOnline }) => {
   const { passenger, ride } = activeRideRequest;
-
-  const handleIgnore = () => {
-    if (onIgnore) {
-      onIgnore();
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -32,9 +26,13 @@ const ActiveStatus = ({ onIgnore }) => {
           <span className="font-medium">Online</span>
         </div>
         <div className="flex items-center gap-3">
-          <Clock className="h-5 w-5" />
           <label className="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" checked className="sr-only peer" />
+            <input
+              type="checkbox"
+              checked={isOnline}
+              onChange={onToggleOnline}
+              className="sr-only peer"
+            />
             <div className="w-11 h-6 bg-green-500 peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
           </label>
         </div>
@@ -113,7 +111,7 @@ const ActiveStatus = ({ onIgnore }) => {
           {/* Action Buttons */}
           <div className="flex gap-4 pt-2">
             <button
-              onClick={handleIgnore}
+              onClick={onIgnore}
               className="flex-1 py-4 bg-gray-100 rounded-xl font-medium hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
             >
               <ThumbsDown className="h-5 w-5" />

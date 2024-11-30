@@ -1,5 +1,5 @@
 import React from "react";
-import { MapPin, Clock, FileText, Moon } from "lucide-react";
+import { MapPin, Clock, FileText, Power } from "lucide-react";
 
 const InactiveStatus = ({
   totalHours,
@@ -35,11 +35,17 @@ const InactiveStatus = ({
       {/* Header */}
       <div className="bg-black text-white p-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <Moon className="h-5 w-5" />
-          <span>Offline</span>
+          <div className="relative">
+            <Power className="h-5 w-5" />
+            <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></div>
+          </div>
+          <span className="font-medium">Offline</span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm">You are offline!</span>
+        <div className="flex items-center gap-3">
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" className="sr-only peer" />
+            <div className="w-11 h-6 bg-gray-400 rounded-full peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+          </label>
         </div>
       </div>
 
@@ -98,8 +104,8 @@ const InactiveStatus = ({
         {/* Go Online Button */}
         <div className="p-6">
           <button
-            className="w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-900 transition-colors"
             onClick={onGoOnline}
+            className="w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-900 transition-colors"
           >
             Go Online
           </button>
