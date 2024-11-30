@@ -158,3 +158,81 @@ export const activeRideData = {
     },
   ],
 };
+
+export const captainStats = {
+  totalHours: 10.2,
+  totalDistance: 30,
+  totalJobs: 20,
+  earnings: 325.0,
+  name: "Jeremiah Curtis",
+};
+
+export const activeRideRequest = {
+  passenger: {
+    name: "Esther Berry",
+    image: "https://randomuser.me/api/portraits/women/44.jpg",
+    paymentMethod: "ApplePay",
+    hasDiscount: true,
+  },
+  ride: {
+    fare: 25.0,
+    distance: 2.2,
+    pickup: {
+      address: "7958 Swift Village",
+      coordinates: [40.7128, -74.006], // Example coordinates
+    },
+    dropoff: {
+      address: "105 William St, Chicago, US",
+      coordinates: [40.7138, -74.007], // Example coordinates
+    },
+  },
+  mapImage: "https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif",
+};
+
+export const rideRequests = [
+  {
+    id: 1,
+    passenger: {
+      name: "Esther Berry",
+      image: "https://randomuser.me/api/portraits/women/44.jpg",
+      paymentMethod: "ApplePay",
+      hasDiscount: true,
+    },
+    ride: {
+      fare: 25.0,
+      distance: 2.2,
+      pickup: "7958 Swift Village",
+      dropoff: "105 William St, Chicago, US",
+    },
+  },
+  {
+    id: 2,
+    passenger: {
+      name: "Callie Greer",
+      image: "https://randomuser.me/api/portraits/women/28.jpg",
+      paymentMethod: "ApplePay",
+      hasDiscount: true,
+    },
+    ride: {
+      fare: 20.0,
+      distance: 1.5,
+      pickup: "62 Kobe Trafficway",
+      dropoff: "280 Icie Park Suite 496",
+    },
+  },
+  {
+    id: 3,
+    passenger: {
+      name: "Earl Guerrero",
+      image: "https://randomuser.me/api/portraits/men/45.jpg",
+      paymentMethod: "ApplePay",
+      hasDiscount: false,
+    },
+    ride: {
+      fare: 10.0,
+      distance: 0.5,
+      pickup: "9965 Soledad Ports",
+      dropoff: "742 Ridge Park Avenue",
+    },
+  },
+];
