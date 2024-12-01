@@ -6,6 +6,7 @@ const cors = require("cors");
 const connectDB = require("./utils/db");
 const userRoutes = require("./routes/user.routes");
 const captainRoutes = require("./routes/captain.routes");
+const mapRoutes = require("./routes/map.routes");
 
 const {
   handleJSONError,
@@ -29,6 +30,7 @@ app.get("/", (req, res) => {
 
 app.use("/users", userRoutes);
 app.use("/captains", captainRoutes);
+app.use("/maps", mapRoutes);
 
 app.use(handle404);
 app.use(globalErrorHandler);
