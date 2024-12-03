@@ -8,6 +8,7 @@ module.exports.getAddressCoordinates = async (address) => {
       `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${process.env.GOOGLE_MAPS_API_KEY}`
     );
 
+    console.log("Google Maps API Response:", response.data);
     if (!response.data.results?.length) {
       throw new Error("No results found");
     }
