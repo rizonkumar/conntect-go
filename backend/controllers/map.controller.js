@@ -62,16 +62,34 @@ module.exports.getAutoCompleteSuggestions = async (req, res, next) => {
         errors: errors.array(),
       });
     }
+
     const { input } = req.query;
-    const suggestions = await mapService.getAutoCompleteSuggestions(input);
-    res.status(200).json({
-      status: "success",
-      message: "Suggestions fetched successfully",
-      data: {
-        suggestions,
-      },
-    });
+
+    try {
+      const suggestions = await mapService.getAutoCompleteSuggestions(input);
+      res.status(200).json({
+        status: "success",
+        message: "Suggestions fetched successfully",
+        data: {
+          suggestions,
+        },
+      });
+    } catch (error) {
+      if (error.response && error.response.data) {
+        const apiError = error.response.data.error_message;
+        return res.status(500).json({
+          success: false,
+          message: `Google Places API returned an error: ${apiError}`,
+        });
+      } else {
+        console.error("Error fetching suggestions:", error);
+        return res.status(500).json({
+          success: false,
+          message: "Internal server error: Failed to fetch suggestions",
+        });
+      }
+    }
   } catch (error) {
-    throw new AppError(error.message || "Error fetching suggestions", 500);
+    throw new AppError(error.message || "Error processing request", 500);
   }
 };
