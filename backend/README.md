@@ -679,3 +679,114 @@ Calculates the distance and travel time between two locations.
   "message": "Error fetching distance and time"
 }
 ```
+
+#### Get Address Suggestions
+
+Returns address suggestions based on user input using Google Places Autocomplete.
+
+**Endpoint:** `GET /api/map/get-suggestions`
+
+**Query Parameters:**
+
+- `input`: string (Required, min length: 3 characters)
+
+**Headers:**
+
+- `Authorization`: Bearer token (Required)
+
+**Success Response:**
+
+- **Status Code:** 200 (OK)
+
+```json
+{
+    "status": "success",
+    "message": "Suggestions fetched successfully",
+    "data": {
+        "suggestions": [
+            {
+                "description": "Full address description",
+                "matched_substrings": [
+                    {
+                        "length": number,
+                        "offset": number
+                    }
+                ],
+                "place_id": "string",
+                "reference": "string",
+                "structured_formatting": {
+                    "main_text": "string",
+                    "main_text_matched_substrings": [
+                        {
+                            "length": number,
+                            "offset": number
+                        }
+                    ],
+                    "secondary_text": "string"
+                },
+                "terms": [
+                    {
+                        "offset": number,
+                        "value": "string"
+                    }
+                ],
+                "types": [
+                    "string"
+                ]
+            }
+        ]
+    }
+}
+```
+
+**Error Responses:**
+
+1. Invalid Input
+
+- **Status Code:** 400 (Bad Request)
+
+```json
+{
+  "success": false,
+  "errors": [
+    {
+      "msg": "Error message",
+      "param": "input",
+      "location": "query"
+    }
+  ]
+}
+```
+
+2. No Results Found
+
+- **Status Code:** 400 (Bad Request)
+
+```json
+{
+  "success": false,
+  "message": "No results found for the given input"
+}
+```
+
+3. Unauthorized
+
+- **Status Code:** 401 (Unauthorized)
+
+```json
+{
+  "success": false,
+  "message": "Unauthorized access"
+}
+```
+
+4. Server Error
+
+- **Status Code:** 500 (Internal Server Error)
+
+```json
+{
+  "success": false,
+  "message": "Error fetching suggestions"
+}
+```
