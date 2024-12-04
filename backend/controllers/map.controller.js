@@ -52,3 +52,26 @@ module.exports.getDistanceTime = async (req, res, next) => {
     );
   }
 };
+
+module.exports.getAutoCompleteSuggestions = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        errors: errors.array(),
+      });
+    }
+    const { input } = req.query;
+    const suggestions = await mapService.getAutoCompleteSuggestions(input);
+    res.status(200).json({
+      status: "success",
+      message: "Suggestions fetched successfully",
+      data: {
+        suggestions,
+      },
+    });
+  } catch (error) {
+    throw new AppError(error.message || "Error fetching suggestions", 500);
+  }
+};

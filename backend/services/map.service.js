@@ -50,3 +50,25 @@ module.exports.getDistanceTime = async (origin, destination) => {
     throw new AppError(error.message, 400);
   }
 };
+
+module.exports.getAutoCompleteSuggestions = async (input) => {
+  if (!input) {
+    throw new AppError("Input is required", 400);
+  }
+
+  try {
+    const response = await axios.get(
+      `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${input}&key=${process.env.GOOGLE_MAPS_API_KEY}`
+    );
+    if (response.data.status === "ZERO_RESULTS") {
+      throw new AppError("No results found for the given input", 400);
+    }
+    if (response.data.status === "OK") {
+      return response.data.predictions;
+    } else {
+      throw new AppError(response.data.error.message, 500);
+    }
+  } catch (error) {
+    throw new AppError(error.message, 500);
+  }
+};

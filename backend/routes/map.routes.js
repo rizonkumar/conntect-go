@@ -4,6 +4,7 @@ const { authUser } = require("../middleware/auth.middleware");
 const {
   getCoordinates,
   getDistanceTime,
+  getAutoCompleteSuggestions,
 } = require("../controllers/map.controller");
 const { query } = require("express-validator");
 
@@ -20,6 +21,13 @@ router.get(
   query("destination").isString().isLength({ min: 3 }),
   authUser,
   getDistanceTime
+);
+
+router.get(
+  "/get-suggestions",
+  query("input").isString().isLength({ min: 3 }),
+  authUser,
+  getAutoCompleteSuggestions
 );
 
 module.exports = router;
