@@ -243,25 +243,28 @@ Creates a new captain account in the system.
 **Endpoint:** `POST /api/captains/register`
 
 **Request Body:**
+
 ```json
 {
   "fullName": {
-    "firstName": "string",    // Required
-    "lastName": "string"      // Required
+    "firstName": "string", // Required
+    "lastName": "string" // Required
   },
-  "email": "string",         // Required, must be unique
-  "password": "string",      // Required
+  "email": "string", // Required, must be unique
+  "password": "string", // Required
   "vehicle": {
-    "color": "string",       // Required
-    "plate": "string",       // Required, vehicle plate number
-    "capacity": "number",    // Required, passenger capacity
-    "vehicleType": "string"  // Required, type of vehicle (e.g., "car")
+    "color": "string", // Required
+    "plate": "string", // Required, vehicle plate number
+    "capacity": "number", // Required, passenger capacity
+    "vehicleType": "string" // Required, type of vehicle (e.g., "car")
   }
 }
 ```
 
 **Success Response:**
+
 - **Status Code:** 201 (Created)
+
 ```json
 {
   "status": "success",
@@ -280,7 +283,7 @@ Creates a new captain account in the system.
         "capacity": "number",
         "vehicleType": "string"
       },
-      "status": "string"     // Initial status will be "inactive"
+      "status": "string" // Initial status will be "inactive"
     },
     "token": "jwt_token_string"
   }
@@ -290,7 +293,9 @@ Creates a new captain account in the system.
 **Error Responses:**
 
 1. Invalid Input
+
 - **Status Code:** 400 (Bad Request)
+
 ```json
 {
   "success": false,
@@ -305,7 +310,9 @@ Creates a new captain account in the system.
 ```
 
 2. Missing Required Fields
+
 - **Status Code:** 400 (Bad Request)
+
 ```json
 {
   "success": false,
@@ -314,7 +321,9 @@ Creates a new captain account in the system.
 ```
 
 3. Email Already Exists
+
 - **Status Code:** 409 (Conflict)
+
 ```json
 {
   "success": false,
@@ -329,15 +338,18 @@ Authenticates a captain and returns a JWT token.
 **Endpoint:** `POST /api/captains/login`
 
 **Request Body:**
+
 ```json
 {
-  "email": "string",    // Required, must be valid email
-  "password": "string"  // Required, min length: 5 characters
+  "email": "string", // Required, must be valid email
+  "password": "string" // Required, min length: 5 characters
 }
 ```
 
 **Success Response:**
+
 - **Status Code:** 200 (OK)
+
 ```json
 {
   "status": "success",
@@ -366,7 +378,9 @@ Authenticates a captain and returns a JWT token.
 **Error Responses:**
 
 1. Invalid Input
+
 - **Status Code:** 400 (Bad Request)
+
 ```json
 {
   "success": false,
@@ -381,7 +395,9 @@ Authenticates a captain and returns a JWT token.
 ```
 
 2. Invalid Credentials
+
 - **Status Code:** 401 (Unauthorized)
+
 ```json
 {
   "success": false,
@@ -396,12 +412,15 @@ Retrieves the profile information of the authenticated captain.
 **Endpoint:** `GET /api/captains/profile`
 
 **Headers:**
+
 ```
 Authorization: Bearer jwt_token_string
 ```
 
 **Success Response:**
+
 - **Status Code:** 200 (OK)
+
 ```json
 {
   "status": "success",
@@ -429,7 +448,9 @@ Authorization: Bearer jwt_token_string
 **Error Responses:**
 
 1. No Token
+
 - **Status Code:** 401 (Unauthorized)
+
 ```json
 {
   "success": false,
@@ -438,7 +459,9 @@ Authorization: Bearer jwt_token_string
 ```
 
 2. Invalid Token
+
 - **Status Code:** 401 (Unauthorized)
+
 ```json
 {
   "success": false,
@@ -447,7 +470,9 @@ Authorization: Bearer jwt_token_string
 ```
 
 3. Captain Not Found
+
 - **Status Code:** 404 (Not Found)
+
 ```json
 {
   "success": false,
@@ -462,12 +487,15 @@ Logs out the captain by blacklisting the current token.
 **Endpoint:** `GET /api/captains/logout`
 
 **Headers:**
+
 ```
 Authorization: Bearer jwt_token_string
 ```
 
 **Success Response:**
+
 - **Status Code:** 200 (OK)
+
 ```json
 {
   "status": "success",
@@ -478,7 +506,9 @@ Authorization: Bearer jwt_token_string
 **Error Responses:**
 
 1. No Token
+
 - **Status Code:** 400 (Bad Request)
+
 ```json
 {
   "success": false,
@@ -487,10 +517,276 @@ Authorization: Bearer jwt_token_string
 ```
 
 2. Invalid Token
+
 - **Status Code:** 401 (Unauthorized)
+
 ```json
 {
   "success": false,
   "message": "Invalid token"
+}
+```
+
+### Map Services
+
+#### Get Coordinates
+
+Converts an address to geographical coordinates.
+
+**Endpoint:** `GET /api/map/get-coordinates`
+
+**Query Parameters:**
+
+- `address`: string (Required, min length: 3 characters)
+
+**Headers:**
+
+- `Authorization`: Bearer token (Required)
+
+**Success Response:**
+
+- **Status Code:** 200 (OK)
+
+```json
+{
+  "status": "success",
+  "message": "Coordinates fetched successfully",
+  "data": {
+    "coordinates": {
+      "lat": number,
+      "lng": number
+    }
+  }
+}
+```
+
+**Error Responses:**
+
+1. Invalid Input
+
+- **Status Code:** 400 (Bad Request)
+
+```json
+{
+  "success": false,
+  "errors": [
+    {
+      "msg": "Error message",
+      "param": "address",
+      "location": "query"
+    }
+  ]
+}
+```
+
+2. Unauthorized
+
+- **Status Code:** 401 (Unauthorized)
+
+```json
+{
+  "success": false,
+  "message": "Unauthorized access"
+}
+```
+
+3. Server Error
+
+- **Status Code:** 500 (Internal Server Error)
+
+```json
+{
+  "success": false,
+  "message": "Error fetching coordinates"
+}
+```
+
+#### Get Distance and Time
+
+Calculates the distance and travel time between two locations.
+
+**Endpoint:** `GET /api/map/get-distance-time`
+
+**Query Parameters:**
+
+- `origin`: string (Required, min length: 3 characters)
+- `destination`: string (Required, min length: 3 characters)
+
+**Headers:**
+
+- `Authorization`: Bearer token (Required)
+
+**Success Response:**
+
+- **Status Code:** 200 (OK)
+
+```json
+{
+  "status": "success",
+  "message": "Distance and time fetched successfully",
+  "data": {
+    "distanceTime": {
+      "distance": {
+        "text": string,
+        "value": number
+      },
+      "duration": {
+        "text": string,
+        "value": number
+      }
+    }
+  }
+}
+```
+
+**Error Responses:**
+
+1. Invalid Input
+
+- **Status Code:** 400 (Bad Request)
+
+```json
+{
+  "success": false,
+  "errors": [
+    {
+      "msg": "Error message",
+      "param": "origin/destination",
+      "location": "query"
+    }
+  ]
+}
+```
+
+2. Unauthorized
+
+- **Status Code:** 401 (Unauthorized)
+
+```json
+{
+  "success": false,
+  "message": "Unauthorized access"
+}
+```
+
+3. Server Error
+
+- **Status Code:** 500 (Internal Server Error)
+
+```json
+{
+  "success": false,
+  "message": "Error fetching distance and time"
+}
+```
+
+#### Get Address Suggestions
+
+Returns address suggestions based on user input using Google Places Autocomplete.
+
+**Endpoint:** `GET /api/map/get-suggestions`
+
+**Query Parameters:**
+
+- `input`: string (Required, min length: 3 characters)
+
+**Headers:**
+
+- `Authorization`: Bearer token (Required)
+
+**Success Response:**
+
+- **Status Code:** 200 (OK)
+
+```json
+{
+    "status": "success",
+    "message": "Suggestions fetched successfully",
+    "data": {
+        "suggestions": [
+            {
+                "description": "Full address description",
+                "matched_substrings": [
+                    {
+                        "length": number,
+                        "offset": number
+                    }
+                ],
+                "place_id": "string",
+                "reference": "string",
+                "structured_formatting": {
+                    "main_text": "string",
+                    "main_text_matched_substrings": [
+                        {
+                            "length": number,
+                            "offset": number
+                        }
+                    ],
+                    "secondary_text": "string"
+                },
+                "terms": [
+                    {
+                        "offset": number,
+                        "value": "string"
+                    }
+                ],
+                "types": [
+                    "string"
+                ]
+            }
+        ]
+    }
+}
+```
+
+**Error Responses:**
+
+1. Invalid Input
+
+- **Status Code:** 400 (Bad Request)
+
+```json
+{
+  "success": false,
+  "errors": [
+    {
+      "msg": "Error message",
+      "param": "input",
+      "location": "query"
+    }
+  ]
+}
+```
+
+2. No Results Found
+
+- **Status Code:** 400 (Bad Request)
+
+```json
+{
+  "success": false,
+  "message": "No results found for the given input"
+}
+```
+
+3. Unauthorized
+
+- **Status Code:** 401 (Unauthorized)
+
+```json
+{
+  "success": false,
+  "message": "Unauthorized access"
+}
+```
+
+4. Server Error
+
+- **Status Code:** 500 (Internal Server Error)
+
+```json
+{
+  "success": false,
+  "message": "Error fetching suggestions"
 }
 ```
