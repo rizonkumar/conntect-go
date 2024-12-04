@@ -1,5 +1,6 @@
 const axios = require("axios");
 require("dotenv").config();
+const AppError = require("../utils/AppError");
 
 module.exports.getAddressCoordinates = async (address) => {
   try {
@@ -10,12 +11,42 @@ module.exports.getAddressCoordinates = async (address) => {
 
     console.log("Google Maps API Response:", response.data);
     if (!response.data.results?.length) {
-      throw new Error("No results found");
+      throw new Error("No results found for the given address", 400);
     }
 
     const location = response.data.results[0].geometry.location;
     return { lat: location.lat, lng: location.lng };
   } catch (error) {
-    throw new Error(error.response?.data?.message || error.message);
+    throw new AppError(error.response?.data?.message || error.message, 500);
+  }
+};
+
+module.exports.getDistanceTime = async (origin, destination) => {
+  try {
+    if (!origin || !destination) {
+      throw new AppError("Origin and destination are required", 400);
+    }
+
+    const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+    const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(
+      origin
+    )}&destinations=${encodeURIComponent(destination)}&key=${apiKey}`;
+
+    try {
+      const response = await axios.get(url);
+      if (response.data.status === "OK") {
+        if (
+          response.data.rows[0].elements[0].status === "NOT_FOUND" ||
+          response.data.rows[0].elements[0].status === "ZERO_RESULTS"
+        ) {
+          throw new AppError("No route found between the two locations", 400);
+        }
+        return response.data.rows[0].elements[0];
+      } else {
+        throw new AppError(response.data.error.message, 500);
+      }
+    } catch (error) {}
+  } catch (error) {
+    throw new AppError(error.message, 400);
   }
 };

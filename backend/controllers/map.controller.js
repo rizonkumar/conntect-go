@@ -26,3 +26,29 @@ module.exports.getCoordinates = async (req, res, next) => {
     next(new AppError(error.message || "Error fetching coordinates", 500));
   }
 };
+
+module.exports.getDistanceTime = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        errors: errors.array(),
+      });
+    }
+    const { origin, destination } = req.query;
+    const distanceTime = await mapService.getDistanceTime(origin, destination);
+    res.status(200).json({
+      status: "success",
+      message: "Distance and time fetched successfully",
+      data: {
+        distanceTime,
+      },
+    });
+  } catch (error) {
+    throw new AppError(
+      error.message || "Error fetching distance and time",
+      500
+    );
+  }
+};
