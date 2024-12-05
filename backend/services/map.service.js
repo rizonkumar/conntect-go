@@ -32,22 +32,21 @@ module.exports.getDistanceTime = async (origin, destination) => {
       origin
     )}&destinations=${encodeURIComponent(destination)}&key=${apiKey}`;
 
-    try {
-      const response = await axios.get(url);
-      if (response.data.status === "OK") {
-        if (
-          response.data.rows[0].elements[0].status === "NOT_FOUND" ||
-          response.data.rows[0].elements[0].status === "ZERO_RESULTS"
-        ) {
-          throw new AppError("No route found between the two locations", 400);
-        }
-        return response.data.rows[0].elements[0];
-      } else {
-        throw new AppError(response.data.error.message, 500);
+    const response = await axios.get(url);
+    if (response.data.status === "OK") {
+      if (
+        response.data.rows[0].elements[0].status === "NOT_FOUND" ||
+        response.data.rows[0].elements[0].status === "ZERO_RESULTS"
+      ) {
+        throw new AppError("No route found between the two locations", 400);
       }
-    } catch (error) {}
+      // Return distance in kilometers
+      return response.data.rows[0].elements[0].distance.value / 1000;
+    } else {
+      throw new AppError(response.data.error_message || "Distance Matrix API error", 500);
+    }
   } catch (error) {
-    throw new AppError(error.message, 400);
+    throw new AppError(error.message || "Error calculating distance", 400);
   }
 };
 
