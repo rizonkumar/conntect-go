@@ -790,3 +790,127 @@ Returns address suggestions based on user input using Google Places Autocomplete
   "message": "Error fetching suggestions"
 }
 ```
+
+### Create Ride
+
+Creates a new ride with fare calculation based on vehicle type and distance.
+
+**Endpoint:** `POST /rides/create-ride`
+
+**Request Body:**
+```json
+{
+  "userId": "string",     // Required, MongoDB ObjectId of the user
+  "pickup": "string",     // Required, pickup location address
+  "destination": "string", // Required, destination location address
+  "vehicleType": "string" // Required, one of: "auto", "car", "motorcycle"
+}
+```
+
+**Success Response:**
+- **Status Code:** 201 (Created)
+```json
+{
+  "status": "success",
+  "message": "Ride created successfully",
+  "data": {
+    "ride": {
+      "_id": "string",
+      "user": "string",
+      "pickup": "string",
+      "destination": "string",
+      "fare": "number",
+      "status": "pending",
+      "createdAt": "date"
+    }
+  }
+}
+```
+
+**Error Responses:**
+
+1. Invalid Input
+- **Status Code:** 400 (Bad Request)
+```json
+{
+  "success": false,
+  "errors": [
+    {
+      "msg": "Error message",
+      "param": "field_name",
+      "location": "body"
+    }
+  ]
+}
+```
+
+2. Invalid Vehicle Type
+- **Status Code:** 400 (Bad Request)
+```json
+{
+  "success": false,
+  "message": "Invalid vehicle type"
+}
+```
+
+### Get All Rides
+
+Retrieves all rides from the system.
+
+**Endpoint:** `GET /rides/rides`
+
+**Success Response:**
+- **Status Code:** 200 (OK)
+```json
+{
+  "status": "success",
+  "message": "Rides fetched successfully",
+  "data": {
+    "rides": [
+      {
+        "_id": "string",
+        "user": {
+          "_id": "string",
+          "name": "string",
+          "email": "string"
+        },
+        "pickup": "string",
+        "destination": "string",
+        "fare": "number",
+        "status": "string",
+        "createdAt": "date"
+      }
+    ]
+  }
+}
+```
+
+**Error Response:**
+- **Status Code:** 500 (Internal Server Error)
+```json
+{
+  "success": false,
+  "message": "Error fetching rides"
+}
+```
+
+### Fare Calculation
+
+Fares are calculated based on the following rates:
+
+1. Auto
+   - Base fare: ₹30
+   - Per kilometer: ₹15
+   - Minimum fare: ₹30
+
+2. Car
+   - Base fare: ₹50
+   - Per kilometer: ₹20
+   - Minimum fare: ₹50
+
+3. Motorcycle
+   - Base fare: ₹20
+   - Per kilometer: ₹12
+   - Minimum fare: ₹20
+
+Note: Distance is calculated using Google Maps Distance Matrix API.
