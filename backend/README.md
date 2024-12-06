@@ -824,6 +824,7 @@ Authorization: Bearer your_jwt_token
       "destination": "string", // Destination location
       "fare": "number",        // Calculated fare for the ride
       "status": "string",      // Current status of the ride (e.g., "pending")
+      "otp": "string",         // 4-digit OTP for ride verification
       "_id": "string",         // Unique ride ID
       "__v": "number"          // Version key
     }

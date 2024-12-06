@@ -1,6 +1,7 @@
 const rideModel = require("../models/ride.model");
 const AppError = require("../utils/AppError");
 const mapService = require("../services/map.service");
+const crypto = require("crypto");
 
 async function getFare(pickup, destination, vehicleType) {
   if (!pickup || !destination) {
@@ -47,11 +48,18 @@ async function getFare(pickup, destination, vehicleType) {
   return Math.round(fare);
 }
 
+function getOTP(num) {
+  // Using crypto.randomInt to generate cryptographically secure random numbers
+  return Array.from({ length: num }, () => crypto.randomInt(0, 10)).join("");
+}
+
 module.exports.createRide = async ({ user, pickup, destination }) => {
   if (!user || !pickup || !destination) {
     throw new AppError("User, pickup and destination are required", 400);
   }
+
   const fare = await getFare(pickup, destination, user.vehicleType);
+  const otp = getOTP(4);
 
   const ride = await rideModel.create({
     user: user.id,
@@ -59,6 +67,7 @@ module.exports.createRide = async ({ user, pickup, destination }) => {
     destination,
     fare,
     status: "pending",
+    otp,
   });
 
   return ride;
