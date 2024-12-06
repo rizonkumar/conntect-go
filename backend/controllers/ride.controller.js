@@ -4,9 +4,8 @@ const AppError = require("../utils/AppError");
 const createRide = async (req, res, next) => {
   try {
     const { pickup, destination } = req.body;
-    // Assuming you have user information in req.user after authentication
     const user = {
-      id: req.body.userId,
+      id: req.user._id,
       vehicleType: req.body.vehicleType, // 'auto', 'car', or 'motorcycle'
     };
 
@@ -28,7 +27,7 @@ const getAllRides = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       message: "Rides fetched successfully",
-      data: { rides }
+      data: { rides },
     });
   } catch (error) {
     next(new AppError(error.message || "Error fetching rides", 500));
