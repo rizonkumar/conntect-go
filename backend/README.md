@@ -793,17 +793,21 @@ Returns address suggestions based on user input using Google Places Autocomplete
 
 ### Create Ride
 
-Creates a new ride with fare calculation based on vehicle type and distance.
+Creates a new ride request in the system.
 
-**Endpoint:** `POST /rides/create-ride`
+**Endpoint:** `POST /api/rides/create-ride`
+
+**Headers:**
+```
+Authorization: Bearer your_jwt_token
+```
 
 **Request Body:**
 ```json
 {
-  "userId": "string",     // Required, MongoDB ObjectId of the user
-  "pickup": "string",     // Required, pickup location address
-  "destination": "string", // Required, destination location address
-  "vehicleType": "string" // Required, one of: "auto", "car", "motorcycle"
+  "pickup": "string",     // Required, min length: 3 characters
+  "destination": "string", // Required, min length: 3 characters
+  "vehicleType": "string"  // Required, one of: "car", "auto", "motorcycle"
 }
 ```
 
@@ -815,41 +819,24 @@ Creates a new ride with fare calculation based on vehicle type and distance.
   "message": "Ride created successfully",
   "data": {
     "ride": {
-      "_id": "string",
-      "user": "string",
-      "pickup": "string",
-      "destination": "string",
-      "fare": "number",
-      "status": "pending",
-      "createdAt": "date"
+      "user": "string",        // User ID of the requester
+      "pickup": "string",      // Pickup location
+      "destination": "string", // Destination location
+      "fare": "number",        // Calculated fare for the ride
+      "status": "string",      // Current status of the ride (e.g., "pending")
+      "_id": "string",         // Unique ride ID
+      "__v": "number"          // Version key
     }
   }
 }
 ```
 
-**Error Responses:**
-
-1. Invalid Input
-- **Status Code:** 400 (Bad Request)
+**Error Response:**
+- **Status Code:** 400 (Bad Request) or 500 (Server Error)
 ```json
 {
-  "success": false,
-  "errors": [
-    {
-      "msg": "Error message",
-      "param": "field_name",
-      "location": "body"
-    }
-  ]
-}
-```
-
-2. Invalid Vehicle Type
-- **Status Code:** 400 (Bad Request)
-```json
-{
-  "success": false,
-  "message": "Invalid vehicle type"
+  "status": "error",
+  "message": "Error message describing what went wrong"
 }
 ```
 

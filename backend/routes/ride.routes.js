@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
 const { createRide, getAllRides } = require("../controllers/ride.controller");
+const { authUser } = require("../middleware/auth.middleware");
 
 router.post(
   "/create-ride",
@@ -22,6 +23,7 @@ router.post(
       .isIn(["auto", "car", "motorcycle"])
       .withMessage("Invalid vehicle type"),
   ],
+  authUser,
   createRide
 );
 

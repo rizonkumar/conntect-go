@@ -43,7 +43,10 @@ module.exports.getDistanceTime = async (origin, destination) => {
       // Return distance in kilometers
       return response.data.rows[0].elements[0].distance.value / 1000;
     } else {
-      throw new AppError(response.data.error_message || "Distance Matrix API error", 500);
+      throw new AppError(
+        response.data.error_message || "Distance Matrix API error",
+        500
+      );
     }
   } catch (error) {
     throw new AppError(error.message || "Error calculating distance", 400);
