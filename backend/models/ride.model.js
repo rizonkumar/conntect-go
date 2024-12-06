@@ -27,6 +27,12 @@ const rideSchema = new mongoose.Schema({
     enum: ["pending", "accepted", "ongoing", "completed", "cancelled"],
     default: "pending",
   },
+  otp: {
+    type: String,
+    selected: false,
+    required: true,
+    length: 4,
+  },
   duration: {
     type: Number, // in seconds
   },
