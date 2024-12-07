@@ -5,6 +5,7 @@ import { LocationsPanel } from "../components/LocationsPanel";
 import RideOptions from "../components/RideOptions";
 import { CaptainDataContext } from "../context/CaptainContext";
 import { UserDataContext } from "../context/UserContext";
+import { logout } from "../api/authApi";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -37,16 +38,27 @@ const Home = () => {
 
   const handleLogout = async () => {
     try {
-      // Clear both user and captain data
+      // Determine if user is captain or regular user
+      const userType = captain ? 'captain' : 'user';
+      await logout(userType);
+      
+      // Clear user state
       setUser({
         email: "",
         fullName: { firstName: "", lastName: "" },
       });
       setCaptain(null);
-      localStorage.removeItem("accessToken");
-      navigate("/login");
+      
+      // Clear tokens
+      localStorage.removeItem("userToken");
+      localStorage.removeItem("captainToken");
+      
+      // Redirect to Welcome page
+      navigate("/");
     } catch (error) {
       console.error("Logout failed:", error);
+      // Still redirect on error
+      navigate("/");
     }
   };
 

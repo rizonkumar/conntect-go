@@ -3,21 +3,31 @@ import generalApi from "./generalApi";
 
 // User Login
 export const userLogin = (data) => {
-  const url = `/users/login`;
+  const url = `/api/users/login`;
   return generalApi.GeneralApi.post(url, data);
 };
 
 // Captain Login
 export const captainLogin = (data) => {
-  const url = `/captains/login`;
+  const url = `/api/captains/login`;
   return generalApi.GeneralApi.post(url, data);
 };
 
 // Get access token based on user type
 export const getAccessToken = (userType = "user") => {
-  return userType === "captain"
-    ? localStorage.getItem("captainToken")
+  // First try to get the specific token type
+  const token = userType === "captain" 
+    ? localStorage.getItem("captainToken") 
     : localStorage.getItem("userToken");
+  
+  if (token) return token;
+  
+  // If no specific token found, try the other type
+  const alternativeToken = userType === "captain"
+    ? localStorage.getItem("userToken")
+    : localStorage.getItem("captainToken");
+    
+  return alternativeToken || null;
 };
 
 // Decode JWT token
@@ -49,12 +59,14 @@ export const verifyToken = (userType = "user") => {
 
 // Refresh token
 export const refreshToken = (userType = "user") => {
-  const url = userType === "captain" ? `/captains/refresh` : `/users/refresh`;
+  const url =
+    userType === "captain" ? "/api/captains/refresh" : "/api/users/refresh";
   return generalApi.GeneralApi.post(url);
 };
 
 // Logout
 export const logout = (userType = "user") => {
-  const url = userType === "captain" ? `/captains/logout` : `/users/logout`;
+  const url =
+    userType === "captain" ? "/api/captains/logout" : "/api/users/logout";
   return generalApi.GeneralApi.post(url);
 };

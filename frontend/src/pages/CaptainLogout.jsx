@@ -10,10 +10,10 @@ export const CaptainLogout = () => {
       try {
         await logout('captain');
         localStorage.removeItem("captainToken");
-        navigate("/captain-login");
+        navigate("/");
       } catch (error) {
         console.error("Logout failed:", error);
-        navigate("/captain-login");
+        navigate("/");
       }
     };
 
