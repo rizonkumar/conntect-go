@@ -1,8 +1,8 @@
 import React, { useState, useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { ArrowRight, User, AlertCircle } from "lucide-react";
 import { CaptainDataContext } from "../context/CaptainContext";
-import axios from "axios";
+import { captainLogin } from "../api/authApi";
 
 const CaptainLogin = () => {
   const [email, setEmail] = useState("");
@@ -18,18 +18,10 @@ const CaptainLogin = () => {
     setError(null);
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/captains/login`,
-        {
-          email: email.trim(),
-          password: password,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await captainLogin({
+        email: email.trim(),
+        password,
+      });
 
       if (response.data) {
         console.log("Captain login response:", response.data);

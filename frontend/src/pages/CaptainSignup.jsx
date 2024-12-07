@@ -2,39 +2,7 @@ import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, AlertCircle } from "lucide-react";
 import { CaptainDataContext } from "../context/CaptainContext";
-import axios from "axios";
-
-const InputField = ({
-  label,
-  type,
-  value,
-  onChange,
-  error,
-  placeholder,
-  required = true,
-}) => (
-  <div className="space-y-2">
-    <label className="text-sm text-gray-600">
-      {label} {required && <span className="text-red-500">*</span>}
-    </label>
-    <input
-      type={type}
-      value={value}
-      onChange={onChange}
-      className={`w-full p-3 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-gray-900 ${
-        error ? "border-2 border-red-500" : ""
-      }`}
-      placeholder={placeholder}
-      required={required}
-    />
-    {error && (
-      <p className="text-red-500 text-sm flex items-center gap-1">
-        <AlertCircle className="w-4 h-4" />
-        {error}
-      </p>
-    )}
-  </div>
-);
+import { captainLogin } from "../api/authApi";
 
 const CaptainSignup = () => {
   const navigate = useNavigate();
@@ -123,15 +91,7 @@ const CaptainSignup = () => {
     setError(null);
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/captains/register`,
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await captainLogin(payload);
 
       if (response.data) {
         setCaptain(response.data);

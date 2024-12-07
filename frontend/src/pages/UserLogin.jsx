@@ -1,32 +1,35 @@
-import React, { useContext, useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Car } from "lucide-react";
-import { UserDataContext } from "../context/userContext";
-import axios from "axios";
+import { UserDataContext } from "../context/UserContext";
+import { userLogin } from "../api/authApi";
 
 const UserLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
-
-  const { user, setUser } = useContext(UserDataContext);
+  const { setUser } = useContext(UserDataContext);
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    const payload = {
-      email,
-      password,
-    };
-    const response = await axios.post(
-      `${import.meta.env.VITE_BASE_URL}/users/login`,
-      payload
-    );
-    if (response.status === 200) {
-      const { data } = response.data;
-      setUser(data.user);
-      localStorage.setItem("userToken", data.token);
-      navigate("/home");
+    try {
+      const response = await userLogin({
+        email: email.trim(),
+        password,
+      });
+
+      if (response.data) {
+        const { data } = response.data;
+        setUser(data.user);
+        localStorage.setItem("userToken", data.token);
+        navigate("/home");
+      }
+    } catch (error) {
+      const errorMessage = 
+        error.response?.data?.message || "Login failed. Please try again.";
+      setError(errorMessage);
+      console.error("Login failed:", errorMessage);
     }
   };
 

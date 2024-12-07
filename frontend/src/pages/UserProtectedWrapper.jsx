@@ -1,16 +1,20 @@
-import { UserDataContext } from "../context/userContext";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useContext, useEffect } from "react";
+import { verifyToken } from "../api/authApi";
 
 const UserProtectedWrapper = ({ children }) => {
   const navigate = useNavigate();
-  const token = localStorage.getItem("userToken");
 
   useEffect(() => {
-    if (!token) {
-      navigate("/login");
-    }
-  }, [token]);
+    const checkAuth = () => {
+      const isValid = verifyToken("user");
+      if (!isValid) {
+        navigate("/login");
+      }
+    };
+
+    checkAuth();
+  }, [navigate]);
 
   return <div>{children}</div>;
 };

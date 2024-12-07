@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
+import { verifyToken, getAccessToken } from "./api/authApi";
 import Welcome from "./pages/Welcome";
 import UserLogin from "./pages/UserLogin";
 import UserSignup from "./pages/UserSignup";
@@ -14,6 +15,27 @@ import CaptainLogout from "./pages/CaptainLogout";
 import Riding from "./components/Riding";
 
 const App = () => {
+  const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
+  const [isCaptainAuthenticated, setIsCaptainAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = () => {
+      // Check user authentication
+      const token = getAccessToken();
+      const isUserValid = verifyToken(token, 'user');
+      setIsUserAuthenticated(isUserValid);
+
+      // Check captain authentication
+      const isCaptainValid = verifyToken(token, 'captain');
+      setIsCaptainAuthenticated(isCaptainValid);
+    };
+
+    checkAuth();
+  }, []);
+
+  console.log("User Authenticated:", isUserAuthenticated);
+  console.log("Captain Authenticated:", isCaptainAuthenticated);
+
   return (
     <div>
       <Routes>
