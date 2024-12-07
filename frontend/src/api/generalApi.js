@@ -8,9 +8,21 @@ let GeneralApi = axios.create({
   headers: {
     "Content-Type": "application/json",
     accept: "application/json",
-    Authorization: localStorage.getItem("accessToken"),
   },
 });
+
+GeneralApi.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 GeneralApi.interceptors.response.use(
   (response) => {

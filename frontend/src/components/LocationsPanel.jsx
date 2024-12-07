@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import {
@@ -10,7 +10,7 @@ import {
   Clock,
   ChevronDown,
 } from "lucide-react";
-import { sampleLocations } from "../../constants/data";
+import { getLocationSuggestions } from "../api/captainApi";
 
 export const LocationsPanel = ({
   isOpen,
@@ -23,6 +23,9 @@ export const LocationsPanel = ({
 }) => {
   const [activeInput, setActiveInput] = useState(null);
   const [isSearchMode, setIsSearchMode] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const panelRef = useRef(null);
 
   useGSAP(() => {
@@ -33,22 +36,55 @@ export const LocationsPanel = ({
     });
   }, [isOpen]);
 
+  const fetchSuggestions = async (input) => {
+    if (!input) {
+      setSuggestions([]);
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await getLocationSuggestions(input);
+
+      if (response.data.status === "success") {
+        setSuggestions(response.data.data.suggestions);
+      } else {
+        console.error("Failed to fetch suggestions:", response.data.message);
+        setSuggestions([]);
+      }
+    } catch (error) {
+      console.error("Error fetching suggestions:", error);
+      setSuggestions([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isSearchMode) {
+      fetchSuggestions(searchQuery);
+    }
+  }, [searchQuery, isSearchMode]);
+
   const handleLocationSelect = (location) => {
     if (activeInput === "pickup") {
-      setPickup(location.name);
+      setPickup(location.description);
     } else {
-      setDropoff(location.name);
+      setDropoff(location.description);
     }
     setIsSearchMode(false);
     setActiveInput(null);
+    setSearchQuery("");
   };
 
   const handleBack = () => {
     setIsSearchMode(false);
     setActiveInput(null);
+    setSearchQuery("");
   };
 
   const clearInput = () => {
+    setSearchQuery("");
     if (activeInput === "pickup") {
       setPickup("");
     } else {
@@ -56,23 +92,20 @@ export const LocationsPanel = ({
     }
   };
 
+  const handleInputFocus = (inputType) => {
+    setActiveInput(inputType);
+    setIsSearchMode(true);
+    setSearchQuery(inputType === "pickup" ? pickup : dropoff);
+  };
+
+  const handleInputChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
   const handleSearch = () => {
     onClose();
     onSearch();
   };
-
-  const filteredLocations =
-    activeInput === "pickup"
-      ? sampleLocations.filter(
-          (location) =>
-            location.name.toLowerCase().includes(pickup.toLowerCase()) ||
-            location.address.toLowerCase().includes(pickup.toLowerCase())
-        )
-      : sampleLocations.filter(
-          (location) =>
-            location.name.toLowerCase().includes(dropoff.toLowerCase()) ||
-            location.address.toLowerCase().includes(dropoff.toLowerCase())
-        );
 
   return (
     <div
@@ -100,10 +133,7 @@ export const LocationsPanel = ({
                   type="text"
                   value={pickup}
                   onChange={(e) => setPickup(e.target.value)}
-                  onFocus={() => {
-                    setActiveInput("pickup");
-                    setIsSearchMode(true);
-                  }}
+                  onFocus={() => handleInputFocus("pickup")}
                   placeholder="Pickup location"
                   className="w-full bg-gray-100 p-4 pl-12 rounded-lg focus:outline-none"
                 />
@@ -118,10 +148,7 @@ export const LocationsPanel = ({
                   type="text"
                   value={dropoff}
                   onChange={(e) => setDropoff(e.target.value)}
-                  onFocus={() => {
-                    setActiveInput("dropoff");
-                    setIsSearchMode(true);
-                  }}
+                  onFocus={() => handleInputFocus("dropoff")}
                   placeholder="Dropoff location"
                   className="w-full bg-gray-100 p-4 pl-12 rounded-lg focus:outline-none"
                 />
@@ -163,19 +190,15 @@ export const LocationsPanel = ({
               <div className="relative flex-1">
                 <input
                   type="text"
-                  value={activeInput === "pickup" ? pickup : dropoff}
-                  onChange={(e) =>
-                    activeInput === "pickup"
-                      ? setPickup(e.target.value)
-                      : setDropoff(e.target.value)
-                  }
+                  value={searchQuery}
+                  onChange={handleInputChange}
                   placeholder={`Enter ${
                     activeInput === "pickup" ? "pickup" : "dropoff"
                   } location`}
                   className="w-full bg-gray-100 p-3 pr-10 rounded-lg focus:outline-none"
                   autoFocus
                 />
-                {(activeInput === "pickup" ? pickup : dropoff) && (
+                {searchQuery && (
                   <button
                     onClick={clearInput}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-200 rounded-full"
@@ -188,28 +211,34 @@ export const LocationsPanel = ({
           </div>
 
           {/* Search Results */}
-          <div className="mt-20 p-4">
-            {filteredLocations.length > 0 ? (
-              filteredLocations.map((location) => (
-                <div
-                  key={location.id}
-                  className="flex items-start gap-4 p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors"
-                  onClick={() => handleLocationSelect(location)}
-                >
-                  <div className="p-2 bg-gray-100 rounded-full">
-                    <MapPin className="h-5 w-5 text-gray-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium">{location.name}</h4>
-                    <p className="text-sm text-gray-500">
-                      {location.fullAddress}
-                    </p>
-                  </div>
-                </div>
-              ))
-            ) : (
+          <div className="flex-1 overflow-y-auto px-4">
+            {isLoading ? (
               <div className="text-center text-gray-500 py-8">
-                No locations found
+                Loading suggestions...
+              </div>
+            ) : searchQuery && suggestions.length === 0 ? (
+              <div className="text-center text-gray-500 py-8">
+                No locations found for "{searchQuery}"
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {suggestions.map((location) => (
+                  <div
+                    key={location.place_id}
+                    className="flex items-start gap-4 p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors"
+                    onClick={() => handleLocationSelect(location)}
+                  >
+                    <div className="p-2 bg-gray-100 rounded-full">
+                      <MapPin className="h-5 w-5 text-gray-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium">{location.description}</h4>
+                      <p className="text-sm text-gray-500">
+                        {location.structured_formatting?.secondary_text || ""}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>

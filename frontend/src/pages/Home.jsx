@@ -1,15 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Circle, Square, Clock, ChevronDown } from "lucide-react";
+import { User, Circle, Square, Clock, ChevronDown, LogOut } from "lucide-react";
 import { LocationsPanel } from "../components/LocationsPanel";
 import RideOptions from "../components/RideOptions";
+import { CaptainDataContext } from "../context/CaptainContext";
+import { UserDataContext } from "../context/UserContext";
 
 const Home = () => {
   const navigate = useNavigate();
+  const { user, setUser } = useContext(UserDataContext);
+  const { captain, setCaptain } = useContext(CaptainDataContext);
   const [pickup, setPickup] = useState("");
   const [dropoff, setDropoff] = useState("");
   const [panelOpen, setPanelOpen] = useState(false);
   const [showRideOptions, setShowRideOptions] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   const submitHandler = async (e) => {
     if (e) {
@@ -29,6 +34,44 @@ const Home = () => {
   const handleBackFromRides = () => {
     setShowRideOptions(false);
   };
+
+  const handleLogout = async () => {
+    try {
+      // Clear both user and captain data
+      setUser({
+        email: "",
+        fullName: { firstName: "", lastName: "" },
+      });
+      setCaptain(null);
+      localStorage.removeItem("accessToken");
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  const handleViewProfile = () => {
+    const isCaptain = !!captain;
+    navigate(isCaptain ? "/captain/profile" : "/user/profile");
+  };
+
+  const getCurrentUser = () => {
+    if (captain) {
+      return {
+        name: `${captain.fullName?.firstName} ${captain.fullName?.lastName}`,
+        role: "captain",
+      };
+    }
+    if (user.fullName?.firstName) {
+      return {
+        name: `${user.fullName.firstName} ${user.fullName.lastName}`,
+        role: "user",
+      };
+    }
+    return { name: "Profile", role: "user" };
+  };
+
+  const currentUser = getCurrentUser();
 
   const mapImageUrl =
     "https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif";
@@ -54,10 +97,35 @@ const Home = () => {
               </button>
             </div>
 
-            <div className="ml-auto flex items-center gap-2">
-              <button className="p-2 rounded-full hover:bg-gray-100">
-                <User className="h-6 w-6" />
+            <div className="ml-auto relative">
+              <button
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                className="p-2 hover:bg-gray-100 rounded-full flex items-center gap-2"
+              >
+                <User className="h-5 w-5" />
+                <span className="text-sm font-medium hidden md:block">
+                  {currentUser.name}
+                </span>
               </button>
+
+              {showProfileMenu && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
+                  <button
+                    onClick={handleViewProfile}
+                    className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center gap-2"
+                  >
+                    <User className="h-4 w-4" />
+                    <span>View Profile</span>
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full px-4 py-2 text-left hover:bg-gray-100 text-red-600 flex items-center gap-2"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Logout</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
