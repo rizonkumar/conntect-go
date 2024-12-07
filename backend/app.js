@@ -29,10 +29,10 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.use("/users", userRoutes);
-app.use("/captains", captainRoutes);
-app.use("/maps", mapRoutes);
-app.use("/rides", rideRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/captains", captainRoutes);
+app.use("/api/maps", mapRoutes);
+app.use("/api/rides", rideRoutes);
 
 app.use(handle404);
 app.use(globalErrorHandler);

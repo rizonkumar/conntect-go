@@ -34,7 +34,23 @@ const getAllRides = async (req, res, next) => {
   }
 };
 
+const getUserRides = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const rides = await rideService.getUserRides(userId);
+
+    res.status(200).json({
+      success: true,
+      message: "User rides fetched successfully",
+      data: { rides },
+    });
+  } catch (error) {
+    next(new AppError(error.message || "Error fetching user rides", 500));
+  }
+};
+
 module.exports = {
   createRide,
   getAllRides,
+  getUserRides,
 };

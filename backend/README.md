@@ -882,6 +882,73 @@ Retrieves all rides from the system.
 }
 ```
 
+### Get User Rides
+
+Retrieves the ride history for the authenticated user.
+
+**Endpoint:** `GET /api/rides/user/rides`
+
+**Headers:**
+- `Authorization`: Bearer token (Required)
+
+**Success Response:**
+- **Status Code:** 200 (OK)
+
+```json
+{
+  "success": true,
+  "message": "User rides fetched successfully",
+  "data": {
+    "rides": [
+      {
+        "pickup": "string",
+        "destination": "string",
+        "fare": "number",
+        "status": "string", // "completed" or "cancelled"
+        "captain": {
+          "fullName": {
+            "firstName": "string",
+            "lastName": "string"
+          }
+        },
+        "createdAt": "date",
+        "duration": "number", // in seconds
+        "distance": "number" // in meters
+      }
+    ]
+  }
+}
+```
+
+**Error Responses:**
+
+1. No Token
+- **Status Code:** 401 (Unauthorized)
+```json
+{
+  "success": false,
+  "message": "No token provided. Please login first"
+}
+```
+
+2. Invalid Token
+- **Status Code:** 401 (Unauthorized)
+```json
+{
+  "success": false,
+  "message": "Invalid token"
+}
+```
+
+3. Server Error
+- **Status Code:** 500 (Internal Server Error)
+```json
+{
+  "success": false,
+  "message": "Error fetching user rides"
+}
+```
+
 ### Fare Calculation
 
 Fares are calculated based on the following rates:
