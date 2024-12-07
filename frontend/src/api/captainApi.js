@@ -2,7 +2,7 @@ import generalApi from "./generalApi";
 
 // get location suggestions
 export const getLocationSuggestions = (input) => {
-  const url = `/maps/get-suggestions?input=${input}`;
+  const url = `/api/maps/get-suggestions?input=${input}`;
   return generalApi.GeneralApi.get(url);
 };
 
