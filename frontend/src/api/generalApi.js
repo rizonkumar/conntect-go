@@ -2,6 +2,7 @@ import axios from "axios";
 import { handleAuthFailure } from "../../utils/handleAuthFailure";
 import notificationAlert from "../components/notificationAlert";
 import { WARN } from "../constant";
+import { getAccessToken } from "./authApi";
 
 let GeneralApi = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
@@ -13,7 +14,8 @@ let GeneralApi = axios.create({
 
 GeneralApi.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("accessToken");
+    // Get token using the helper function that checks both user and captain tokens
+    const token = getAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

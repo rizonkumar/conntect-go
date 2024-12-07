@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
-import { verifyToken, getAccessToken } from "./api/authApi";
+import { Route, Routes, Navigate } from "react-router-dom";
+import { verifyToken } from "./api/authApi";
 import Welcome from "./pages/Welcome";
 import UserLogin from "./pages/UserLogin";
 import UserSignup from "./pages/UserSignup";
@@ -18,39 +18,101 @@ import UserProfile from "./pages/UserProfile";
 const App = () => {
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
   const [isCaptainAuthenticated, setIsCaptainAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkAuth = () => {
       // Check user authentication
-      const token = getAccessToken();
-      const isUserValid = verifyToken(token, 'user');
+      const isUserValid = verifyToken("user");
       setIsUserAuthenticated(isUserValid);
 
       // Check captain authentication
-      const isCaptainValid = verifyToken(token, 'captain');
+      const isCaptainValid = verifyToken("captain");
       setIsCaptainAuthenticated(isCaptainValid);
+
+      setIsLoading(false);
     };
 
     checkAuth();
   }, []);
 
-  console.log("User Authenticated:", isUserAuthenticated);
-  console.log("Captain Authenticated:", isCaptainAuthenticated);
+  // Show loading state
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  // Landing page logic
+  const LandingPage = () => {
+    if (isUserAuthenticated) {
+      return <Navigate to="/home" replace />;
+    }
+    if (isCaptainAuthenticated) {
+      return <Navigate to="/captain-home" replace />;
+    }
+    return <Welcome />;
+  };
 
   return (
     <div>
       <Routes>
-        <Route path="/" element={<Welcome />} />
-        <Route path="/login" element={<UserLogin />} />
-        <Route path="/riding" element={<Riding />} />
-        <Route path="/signup" element={<UserSignup />} />
-        <Route path="/captain-login" element={<CaptainLogin />} />
-        <Route path="/captain-signup" element={<CaptainSignup />} />
+        <Route path="/" element={<LandingPage />} />
+
+        {/* Public routes */}
+        <Route
+          path="/login"
+          element={
+            !isUserAuthenticated ? (
+              <UserLogin />
+            ) : (
+              <Navigate to="/home" replace />
+            )
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            !isUserAuthenticated ? (
+              <UserSignup />
+            ) : (
+              <Navigate to="/home" replace />
+            )
+          }
+        />
+        <Route
+          path="/captain-login"
+          element={
+            !isCaptainAuthenticated ? (
+              <CaptainLogin />
+            ) : (
+              <Navigate to="/captain-home" replace />
+            )
+          }
+        />
+        <Route
+          path="/captain-signup"
+          element={
+            !isCaptainAuthenticated ? (
+              <CaptainSignup />
+            ) : (
+              <Navigate to="/captain-home" replace />
+            )
+          }
+        />
+
+        {/* Protected user routes */}
         <Route
           path="/home"
           element={
             <UserProtectedWrapper>
               <Home />
+            </UserProtectedWrapper>
+          }
+        />
+        <Route
+          path="/riding"
+          element={
+            <UserProtectedWrapper>
+              <Riding />
             </UserProtectedWrapper>
           }
         />
@@ -62,6 +124,16 @@ const App = () => {
             </UserProtectedWrapper>
           }
         />
+        <Route
+          path="/user/profile"
+          element={
+            <UserProtectedWrapper>
+              <UserProfile />
+            </UserProtectedWrapper>
+          }
+        />
+
+        {/* Protected captain routes */}
         <Route
           path="/captain-home"
           element={
@@ -79,14 +151,6 @@ const App = () => {
           }
         />
         <Route
-          path="/user/profile"
-          element={
-            <UserProtectedWrapper>
-              <UserProfile />
-            </UserProtectedWrapper>
-          }
-        />
-        <Route
           path="/captain/profile"
           element={
             <CaptainProtectedWrapper>
@@ -94,6 +158,9 @@ const App = () => {
             </CaptainProtectedWrapper>
           }
         />
+
+        {/* Catch all route */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
   );

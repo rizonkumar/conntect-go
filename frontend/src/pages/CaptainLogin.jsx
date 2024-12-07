@@ -24,18 +24,10 @@ const CaptainLogin = () => {
       });
 
       if (response.data) {
-        console.log("Captain login response:", response.data);
-        const token = response.data.data?.token || response.data.token;
-        console.log("Extracted token:", token);
-
-        if (token) {
-          localStorage.setItem("captainToken", token);
-          setCaptain(response.data);
-          navigate("/captain-home");
-        } else {
-          console.error("No token found in response");
-          setError("Login failed: No token received");
-        }
+        const { data } = response.data;
+        setCaptain(data.captain);
+        localStorage.setItem("captainToken", data.token);
+        navigate("/captain-home");
       }
     } catch (error) {
       const errorMessage =
