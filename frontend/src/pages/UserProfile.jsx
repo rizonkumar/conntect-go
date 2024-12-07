@@ -20,7 +20,7 @@ const UserProfile = () => {
   const { captain, setCaptain } = useContext(CaptainDataContext);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [rideHistory, setRideHistory] = useState([]);
+  const [rideHistory, setRideHistory] = useState(null);
 
   // Determine if we should show user or captain profile
   const isCaptain = !!captain;
@@ -55,10 +55,16 @@ const UserProfile = () => {
       try {
         const response = await getRideHistory();
         if (response.data.success) {
-          setRideHistory(response.data.data.rideHistory);
+          // Ensure we always set an array, even if data is null
+          setRideHistory(response.data.data.rideHistory || []);
+        } else {
+          // If the request fails, set to an empty array
+          setRideHistory([]);
         }
       } catch (err) {
         console.error("Error fetching ride history:", err);
+        // On error, set to an empty array
+        setRideHistory([]);
       }
     };
 
@@ -163,37 +169,73 @@ const UserProfile = () => {
               </div>
               <div className="border-t border-gray-200">
                 <ul className="divide-y divide-gray-200">
-                  {rideHistory.map((ride, index) => (
-                    <li key={index} className="px-4 py-4 sm:px-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex flex-col">
-                          <div className="flex items-center">
-                            <Clock className="h-4 w-4 text-gray-400 mr-2" />
-                            <p className="text-sm text-gray-500">{ride.date}</p>
-                          </div>
-                          <div className="mt-2 flex items-center">
-                            <MapPin className="h-4 w-4 text-gray-400 mr-2" />
-                            <p className="text-sm text-gray-900">
-                              {ride.from} → {ride.to}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end">
-                          <p className="text-sm font-medium text-gray-900">
-                            {ride.amount}
-                          </p>
-                          <div className="flex items-center mt-1">
-                            {[...Array(ride.rating)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className="h-4 w-4 text-yellow-400 fill-current"
-                              />
-                            ))}
-                          </div>
-                        </div>
+                  {rideHistory === null ? (
+                    <div className="flex items-center justify-center p-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                    </div>
+                  ) : rideHistory.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center p-8 text-center">
+                      <div className="bg-gray-100 rounded-full p-4 mb-4">
+                        <Clock
+                          className="h-16 w-16 text-gray-500"
+                          strokeWidth={1.5}
+                        />
                       </div>
-                    </li>
-                  ))}
+                      <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                        No {isCaptain ? "Trips" : "Rides"} Yet
+                      </h3>
+                      <p className="text-gray-500 mb-4 max-w-md">
+                        {isCaptain
+                          ? "You haven't completed any trips yet. Start accepting ride requests to see your trip history."
+                          : "You haven't taken any rides yet. Book your first ride and start exploring!"}
+                      </p>
+                      <button
+                        onClick={() =>
+                          navigate(
+                            isCaptain ? "/captain-dashboard" : "/book-ride"
+                          )
+                        }
+                        className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-300 flex items-center"
+                      >
+                        {isCaptain ? "Go to Dashboard" : "Book a Ride"}
+                        <ArrowLeft className="h-5 w-5 ml-2" />
+                      </button>
+                    </div>
+                  ) : (
+                    rideHistory.map((ride, index) => (
+                      <li key={index} className="px-4 py-4 sm:px-6">
+                        <div className="flex items-center justify-between">
+                          <div className="flex flex-col">
+                            <div className="flex items-center">
+                              <Clock className="h-4 w-4 text-gray-400 mr-2" />
+                              <p className="text-sm text-gray-500">
+                                {ride.date}
+                              </p>
+                            </div>
+                            <div className="mt-2 flex items-center">
+                              <MapPin className="h-4 w-4 text-gray-400 mr-2" />
+                              <p className="text-sm text-gray-900">
+                                {ride.from} → {ride.to}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-end">
+                            <p className="text-sm font-medium text-gray-900">
+                              {ride.amount}
+                            </p>
+                            <div className="flex items-center mt-1">
+                              {[...Array(ride.rating)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className="h-4 w-4 text-yellow-400 fill-current"
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                    ))
+                  )}
                 </ul>
               </div>
             </div>
