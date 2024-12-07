@@ -85,3 +85,21 @@ module.exports.getAllRides = async () => {
     throw new AppError("Error fetching rides", 500);
   }
 };
+
+module.exports.getUserRides = async (userId) => {
+  try {
+    if (!userId) {
+      throw new AppError("User ID is required", 400);
+    }
+
+    const rides = await rideModel
+      .find({ user: userId, status: { $in: ["completed", "cancelled"] } })
+      .sort({ createdAt: -1 })
+      .populate("captain", "fullName")
+      .select("pickup destination fare status captain createdAt duration distance");
+
+    return rides;
+  } catch (error) {
+    throw new AppError(error.message || "Error fetching user rides", 500);
+  }
+};
