@@ -20,7 +20,7 @@ const CaptainContext = ({ children }) => {
     setError,
     updateCaptain,
   };
-
+  console.log("Captain context value:", value);
   return (
     <CaptainDataContext.Provider value={value}>
       {children}

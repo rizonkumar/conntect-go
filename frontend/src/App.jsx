@@ -13,6 +13,7 @@ import CaptainHome from "./pages/CaptainHome";
 import CaptainProtectedWrapper from "./pages/CaptainProtectedWrapper";
 import CaptainLogout from "./pages/CaptainLogout";
 import Riding from "./components/Riding";
+import UserProfile from "./pages/UserProfile";
 
 const App = () => {
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
@@ -74,6 +75,22 @@ const App = () => {
           element={
             <CaptainProtectedWrapper>
               <CaptainLogout />
+            </CaptainProtectedWrapper>
+          }
+        />
+        <Route
+          path="/user/profile"
+          element={
+            <UserProtectedWrapper>
+              <UserProfile />
+            </UserProtectedWrapper>
+          }
+        />
+        <Route
+          path="/captain/profile"
+          element={
+            <CaptainProtectedWrapper>
+              <UserProfile />
             </CaptainProtectedWrapper>
           }
         />
