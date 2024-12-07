@@ -10,10 +10,10 @@ const UserLogout = () => {
       try {
         await logout('user');
         localStorage.removeItem("userToken");
-        navigate("/login");
+        navigate("/");
       } catch (error) {
         console.error("Logout failed:", error);
-        navigate("/login");
+        navigate("/");
       }
     };
 
