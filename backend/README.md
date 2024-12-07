@@ -1,6 +1,8 @@
 ## API Documentation
 
-### Create User
+### Authentication Routes
+
+#### Create User
 
 Creates a new user account in the system.
 
@@ -19,9 +21,7 @@ Creates a new user account in the system.
 }
 ```
 
-**Success Response:**
-
-- **Status Code:** 201 (Created)
+**Success Response:** 201 Created
 
 ```json
 {
@@ -41,48 +41,7 @@ Creates a new user account in the system.
 }
 ```
 
-**Error Responses:**
-
-1. Invalid Input
-
-- **Status Code:** 400 (Bad Request)
-
-```json
-{
-  "success": false,
-  "errors": [
-    {
-      "msg": "Error message",
-      "param": "field_name",
-      "location": "body"
-    }
-  ]
-}
-```
-
-2. Missing Required Fields
-
-- **Status Code:** 400 (Bad Request)
-
-```json
-{
-  "success": false,
-  "message": "Missing required fields"
-}
-```
-
-3. Email Already Exists
-
-- **Status Code:** 409 (Conflict)
-
-```json
-{
-  "success": false,
-  "message": "Email already registered"
-}
-```
-
-### Login User
+#### Login User
 
 Authenticates a user and returns a JWT token.
 
@@ -97,9 +56,7 @@ Authenticates a user and returns a JWT token.
 }
 ```
 
-**Success Response:**
-
-- **Status Code:** 200 (OK)
+**Success Response:** 200 OK
 
 ```json
 {
@@ -119,37 +76,7 @@ Authenticates a user and returns a JWT token.
 }
 ```
 
-**Error Responses:**
-
-1. Invalid Input
-
-- **Status Code:** 400 (Bad Request)
-
-```json
-{
-  "success": false,
-  "errors": [
-    {
-      "msg": "Error message",
-      "param": "field_name",
-      "location": "body"
-    }
-  ]
-}
-```
-
-2. Invalid Credentials
-
-- **Status Code:** 401 (Unauthorized)
-
-```json
-{
-  "success": false,
-  "message": "Invalid email or password"
-}
-```
-
-### Get User Profile
+#### Get User Profile
 
 Retrieves the profile information of the authenticated user.
 
@@ -161,9 +88,7 @@ Retrieves the profile information of the authenticated user.
   or
 - Cookie with `token` (Required)
 
-**Success Response:**
-
-- **Status Code:** 200 (OK)
+**Success Response:** 200 OK
 
 ```json
 {
@@ -182,18 +107,7 @@ Retrieves the profile information of the authenticated user.
 }
 ```
 
-**Error Response:**
-
-- **Status Code:** 401 (Unauthorized)
-
-```json
-{
-  "success": false,
-  "message": "No token provided. Please login first"
-}
-```
-
-### Logout User
+#### Logout User
 
 Logs out the current user by blacklisting their token.
 
@@ -205,9 +119,7 @@ Logs out the current user by blacklisting their token.
   or
 - Cookie with `token` (Required)
 
-**Success Response:**
-
-- **Status Code:** 200 (OK)
+**Success Response:** 200 OK
 
 ```json
 {
@@ -216,27 +128,163 @@ Logs out the current user by blacklisting their token.
 }
 ```
 
-**Error Response:**
+### Ride Routes
 
-- **Status Code:** 401 (Unauthorized)
+#### Create Ride
+
+Create a new ride offering or request.
+
+**Endpoint:** `POST /api/rides/create`
+
+**Headers:**
+
+- `Authorization`: Bearer token (Required)
+
+**Request Body:**
+
+```json
+{
+  "type": "offer|request", // Required
+  "origin": "string", // Required
+  "destination": "string", // Required
+  "departureTime": "ISO 8601 datetime", // Required
+  "availableSeats": "number", // Required for offer type
+  "vehicle": {
+    "make": "string",
+    "model": "string",
+    "year": "number"
+  }, // Optional for offer type
+  "price": "number" // Optional
+}
+```
+
+**Success Response:** 201 Created
+
+```json
+{
+  "success": true,
+  "message": "Ride created successfully",
+  "data": {
+    "ride": {
+      "_id": "ride_id",
+      "type": "offer|request",
+      "origin": "string",
+      "destination": "string",
+      "departureTime": "ISO 8601 datetime",
+      "createdBy": "user_id"
+    }
+  }
+}
+```
+
+#### Get User Rides
+
+Retrieve all rides created by the authenticated user.
+
+**Endpoint:** `GET /api/rides/user`
+
+**Headers:**
+
+- `Authorization`: Bearer token (Required)
+
+**Success Response:** 200 OK
+
+```json
+{
+  "success": true,
+  "message": "User rides fetched successfully",
+  "data": {
+    "rides": [
+      {
+        "_id": "ride_id",
+        "type": "offer|request",
+        "origin": "string",
+        "destination": "string",
+        "departureTime": "ISO 8601 datetime"
+      }
+      // More rides...
+    ]
+  }
+}
+```
+
+#### Search Rides
+
+Search for available rides based on various filters.
+
+**Endpoint:** `GET /api/rides/search`
+
+**Query Parameters:**
+
+- `origin`: string (optional)
+- `destination`: string (optional)
+- `departureDate`: ISO 8601 date (optional)
+- `type`: "offer|request" (optional)
+
+**Success Response:** 200 OK
+
+```json
+{
+  "success": true,
+  "message": "Rides found successfully",
+  "data": {
+    "rides": [
+      {
+        "_id": "ride_id",
+        "type": "offer|request",
+        "origin": "string",
+        "destination": "string",
+        "departureTime": "ISO 8601 datetime",
+        "createdBy": {
+          "_id": "user_id",
+          "fullName": {
+            "firstName": "string",
+            "lastName": "string"
+          }
+        }
+      }
+      // More rides...
+    ]
+  }
+}
+```
+
+### Error Handling
+
+All error responses follow a consistent format:
 
 ```json
 {
   "success": false,
-  "message": "No token provided. Please login first"
+  "message": "Descriptive error message",
+  "errors": [
+    {
+      "msg": "Specific error details",
+      "param": "field_name", // Optional
+      "location": "body|query|params" // Optional
+    }
+  ]
 }
 ```
 
-or
+### Authentication Middleware
+
+Most routes require authentication. Unauthorized access will result in a 401 Unauthorized response:
 
 ```json
 {
   "success": false,
-  "message": "Token is blacklisted"
+  "message": "Unauthorized. Please login."
 }
 ```
 
-### Register Captain
+### Rate Limiting
+
+API routes are protected with rate limiting to prevent abuse. Exceeding the limit will result in a 429 Too Many Requests response.
+
+### Captain Routes
+
+#### Register Captain
 
 Creates a new captain account in the system.
 
@@ -261,9 +309,7 @@ Creates a new captain account in the system.
 }
 ```
 
-**Success Response:**
-
-- **Status Code:** 201 (Created)
+**Success Response:** 201 Created
 
 ```json
 {
@@ -290,48 +336,7 @@ Creates a new captain account in the system.
 }
 ```
 
-**Error Responses:**
-
-1. Invalid Input
-
-- **Status Code:** 400 (Bad Request)
-
-```json
-{
-  "success": false,
-  "errors": [
-    {
-      "msg": "Error message",
-      "param": "field_name",
-      "location": "body"
-    }
-  ]
-}
-```
-
-2. Missing Required Fields
-
-- **Status Code:** 400 (Bad Request)
-
-```json
-{
-  "success": false,
-  "message": "Missing required fields"
-}
-```
-
-3. Email Already Exists
-
-- **Status Code:** 409 (Conflict)
-
-```json
-{
-  "success": false,
-  "message": "Email already registered"
-}
-```
-
-### Login Captain
+#### Login Captain
 
 Authenticates a captain and returns a JWT token.
 
@@ -346,9 +351,7 @@ Authenticates a captain and returns a JWT token.
 }
 ```
 
-**Success Response:**
-
-- **Status Code:** 200 (OK)
+**Success Response:** 200 OK
 
 ```json
 {
@@ -375,37 +378,7 @@ Authenticates a captain and returns a JWT token.
 }
 ```
 
-**Error Responses:**
-
-1. Invalid Input
-
-- **Status Code:** 400 (Bad Request)
-
-```json
-{
-  "success": false,
-  "errors": [
-    {
-      "msg": "Error message",
-      "param": "field_name",
-      "location": "body"
-    }
-  ]
-}
-```
-
-2. Invalid Credentials
-
-- **Status Code:** 401 (Unauthorized)
-
-```json
-{
-  "success": false,
-  "message": "Invalid email or password"
-}
-```
-
-### Get Captain Profile
+#### Get Captain Profile
 
 Retrieves the profile information of the authenticated captain.
 
@@ -417,9 +390,7 @@ Retrieves the profile information of the authenticated captain.
 Authorization: Bearer jwt_token_string
 ```
 
-**Success Response:**
-
-- **Status Code:** 200 (OK)
+**Success Response:** 200 OK
 
 ```json
 {
@@ -445,42 +416,7 @@ Authorization: Bearer jwt_token_string
 }
 ```
 
-**Error Responses:**
-
-1. No Token
-
-- **Status Code:** 401 (Unauthorized)
-
-```json
-{
-  "success": false,
-  "message": "No token provided. Please login first"
-}
-```
-
-2. Invalid Token
-
-- **Status Code:** 401 (Unauthorized)
-
-```json
-{
-  "success": false,
-  "message": "Invalid token"
-}
-```
-
-3. Captain Not Found
-
-- **Status Code:** 404 (Not Found)
-
-```json
-{
-  "success": false,
-  "message": "Captain not found"
-}
-```
-
-### Logout Captain
+#### Logout Captain
 
 Logs out the captain by blacklisting the current token.
 
@@ -492,38 +428,12 @@ Logs out the captain by blacklisting the current token.
 Authorization: Bearer jwt_token_string
 ```
 
-**Success Response:**
-
-- **Status Code:** 200 (OK)
+**Success Response:** 200 OK
 
 ```json
 {
   "status": "success",
   "message": "Captain logged out successfully"
-}
-```
-
-**Error Responses:**
-
-1. No Token
-
-- **Status Code:** 400 (Bad Request)
-
-```json
-{
-  "success": false,
-  "message": "No token found"
-}
-```
-
-2. Invalid Token
-
-- **Status Code:** 401 (Unauthorized)
-
-```json
-{
-  "success": false,
-  "message": "Invalid token"
 }
 ```
 
@@ -543,9 +453,7 @@ Converts an address to geographical coordinates.
 
 - `Authorization`: Bearer token (Required)
 
-**Success Response:**
-
-- **Status Code:** 200 (OK)
+**Success Response:** 200 OK
 
 ```json
 {
@@ -557,47 +465,6 @@ Converts an address to geographical coordinates.
       "lng": number
     }
   }
-}
-```
-
-**Error Responses:**
-
-1. Invalid Input
-
-- **Status Code:** 400 (Bad Request)
-
-```json
-{
-  "success": false,
-  "errors": [
-    {
-      "msg": "Error message",
-      "param": "address",
-      "location": "query"
-    }
-  ]
-}
-```
-
-2. Unauthorized
-
-- **Status Code:** 401 (Unauthorized)
-
-```json
-{
-  "success": false,
-  "message": "Unauthorized access"
-}
-```
-
-3. Server Error
-
-- **Status Code:** 500 (Internal Server Error)
-
-```json
-{
-  "success": false,
-  "message": "Error fetching coordinates"
 }
 ```
 
@@ -616,9 +483,7 @@ Calculates the distance and travel time between two locations.
 
 - `Authorization`: Bearer token (Required)
 
-**Success Response:**
-
-- **Status Code:** 200 (OK)
+**Success Response:** 200 OK
 
 ```json
 {
@@ -639,47 +504,6 @@ Calculates the distance and travel time between two locations.
 }
 ```
 
-**Error Responses:**
-
-1. Invalid Input
-
-- **Status Code:** 400 (Bad Request)
-
-```json
-{
-  "success": false,
-  "errors": [
-    {
-      "msg": "Error message",
-      "param": "origin/destination",
-      "location": "query"
-    }
-  ]
-}
-```
-
-2. Unauthorized
-
-- **Status Code:** 401 (Unauthorized)
-
-```json
-{
-  "success": false,
-  "message": "Unauthorized access"
-}
-```
-
-3. Server Error
-
-- **Status Code:** 500 (Internal Server Error)
-
-```json
-{
-  "success": false,
-  "message": "Error fetching distance and time"
-}
-```
-
 #### Get Address Suggestions
 
 Returns address suggestions based on user input using Google Places Autocomplete.
@@ -694,9 +518,7 @@ Returns address suggestions based on user input using Google Places Autocomplete
 
 - `Authorization`: Bearer token (Required)
 
-**Success Response:**
-
-- **Status Code:** 200 (OK)
+**Success Response:** 200 OK
 
 ```json
 {
@@ -739,58 +561,6 @@ Returns address suggestions based on user input using Google Places Autocomplete
 }
 ```
 
-**Error Responses:**
-
-1. Invalid Input
-
-- **Status Code:** 400 (Bad Request)
-
-```json
-{
-  "success": false,
-  "errors": [
-    {
-      "msg": "Error message",
-      "param": "input",
-      "location": "query"
-    }
-  ]
-}
-```
-
-2. No Results Found
-
-- **Status Code:** 400 (Bad Request)
-
-```json
-{
-  "success": false,
-  "message": "No results found for the given input"
-}
-```
-
-3. Unauthorized
-
-- **Status Code:** 401 (Unauthorized)
-
-```json
-{
-  "success": false,
-  "message": "Unauthorized access"
-}
-```
-
-4. Server Error
-
-- **Status Code:** 500 (Internal Server Error)
-
-```json
-{
-  "success": false,
-  "message": "Error fetching suggestions"
-}
-```
-
 ### Create Ride
 
 Creates a new ride request in the system.
@@ -798,46 +568,39 @@ Creates a new ride request in the system.
 **Endpoint:** `POST /api/rides/create-ride`
 
 **Headers:**
+
 ```
 Authorization: Bearer your_jwt_token
 ```
 
 **Request Body:**
+
 ```json
 {
-  "pickup": "string",     // Required, min length: 3 characters
+  "pickup": "string", // Required, min length: 3 characters
   "destination": "string", // Required, min length: 3 characters
-  "vehicleType": "string"  // Required, one of: "car", "auto", "motorcycle"
+  "vehicleType": "string" // Required, one of: "car", "auto", "motorcycle"
 }
 ```
 
-**Success Response:**
-- **Status Code:** 201 (Created)
+**Success Response:** 201 Created
+
 ```json
 {
   "status": "success",
   "message": "Ride created successfully",
   "data": {
     "ride": {
-      "user": "string",        // User ID of the requester
-      "pickup": "string",      // Pickup location
+      "user": "string", // User ID of the requester
+      "pickup": "string", // Pickup location
       "destination": "string", // Destination location
-      "fare": "number",        // Calculated fare for the ride
-      "status": "string",      // Current status of the ride (e.g., "pending")
-      "otp": "string",         // 4-digit OTP for ride verification
-      "_id": "string",         // Unique ride ID
-      "__v": "number"          // Version key
+      "fare": "number", // Calculated fare for the ride
+      "status": "string", // Current status of the ride (e.g., "pending")
+      "otp": "string", // 4-digit OTP for ride verification
+      "_id": "string", // Unique ride ID
+      "__v": "number" // Version key
     }
   }
-}
-```
-
-**Error Response:**
-- **Status Code:** 400 (Bad Request) or 500 (Server Error)
-```json
-{
-  "status": "error",
-  "message": "Error message describing what went wrong"
 }
 ```
 
@@ -847,8 +610,8 @@ Retrieves all rides from the system.
 
 **Endpoint:** `GET /rides/rides`
 
-**Success Response:**
-- **Status Code:** 200 (OK)
+**Success Response:** 200 OK
+
 ```json
 {
   "status": "success",
@@ -873,15 +636,6 @@ Retrieves all rides from the system.
 }
 ```
 
-**Error Response:**
-- **Status Code:** 500 (Internal Server Error)
-```json
-{
-  "success": false,
-  "message": "Error fetching rides"
-}
-```
-
 ### Get User Rides
 
 Retrieves the ride history for the authenticated user.
@@ -889,10 +643,10 @@ Retrieves the ride history for the authenticated user.
 **Endpoint:** `GET /api/rides/user/rides`
 
 **Headers:**
+
 - `Authorization`: Bearer token (Required)
 
-**Success Response:**
-- **Status Code:** 200 (OK)
+**Success Response:** 200 OK
 
 ```json
 {
@@ -920,45 +674,18 @@ Retrieves the ride history for the authenticated user.
 }
 ```
 
-**Error Responses:**
-
-1. No Token
-- **Status Code:** 401 (Unauthorized)
-```json
-{
-  "success": false,
-  "message": "No token provided. Please login first"
-}
-```
-
-2. Invalid Token
-- **Status Code:** 401 (Unauthorized)
-```json
-{
-  "success": false,
-  "message": "Invalid token"
-}
-```
-
-3. Server Error
-- **Status Code:** 500 (Internal Server Error)
-```json
-{
-  "success": false,
-  "message": "Error fetching user rides"
-}
-```
-
 ### Fare Calculation
 
 Fares are calculated based on the following rates:
 
 1. Auto
+
    - Base fare: ₹30
    - Per kilometer: ₹15
    - Minimum fare: ₹30
 
 2. Car
+
    - Base fare: ₹50
    - Per kilometer: ₹20
    - Minimum fare: ₹50
