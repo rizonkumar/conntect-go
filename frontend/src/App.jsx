@@ -13,7 +13,7 @@ import CaptainHome from "./pages/CaptainHome";
 import CaptainProtectedWrapper from "./pages/CaptainProtectedWrapper";
 import CaptainLogout from "./pages/CaptainLogout";
 import Riding from "./components/Riding";
-import UserProfile from "./pages/UserProfile";
+import Profile from "./pages/Profile";
 
 const App = () => {
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
@@ -128,7 +128,7 @@ const App = () => {
           path="/user/profile"
           element={
             <UserProtectedWrapper>
-              <UserProfile />
+              <Profile />
             </UserProtectedWrapper>
           }
         />
@@ -154,7 +154,7 @@ const App = () => {
           path="/captain/profile"
           element={
             <CaptainProtectedWrapper>
-              <UserProfile />
+              <Profile />
             </CaptainProtectedWrapper>
           }
         />
