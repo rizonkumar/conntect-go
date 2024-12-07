@@ -6,7 +6,10 @@ export const getLocationSuggestions = (input) => {
   return generalApi.GeneralApi.get(url);
 };
 
-// get captain profile
 export const getCaptainProfile = () => {
   return generalApi.GeneralApi.get("/api/captains/profile");
+};
+
+export const getCaptainRideHistory = () => {
+  return generalApi.GeneralApi.get("/api/rides/captain/rides");
 };

@@ -53,7 +53,7 @@ function getOTP(num) {
   return Array.from({ length: num }, () => crypto.randomInt(0, 10)).join("");
 }
 
-module.exports.createRide = async ({ user, pickup, destination }) => {
+const createRide = async ({ user, pickup, destination }) => {
   if (!user || !pickup || !destination) {
     throw new AppError("User, pickup and destination are required", 400);
   }
@@ -73,7 +73,7 @@ module.exports.createRide = async ({ user, pickup, destination }) => {
   return ride;
 };
 
-module.exports.getAllRides = async () => {
+const getAllRides = async () => {
   try {
     const rides = await rideModel
       .find()
@@ -86,7 +86,7 @@ module.exports.getAllRides = async () => {
   }
 };
 
-module.exports.getUserRides = async (userId) => {
+const getUserRides = async (userId) => {
   try {
     if (!userId) {
       throw new AppError("User ID is required", 400);
@@ -96,10 +96,49 @@ module.exports.getUserRides = async (userId) => {
       .find({ user: userId, status: { $in: ["completed", "cancelled"] } })
       .sort({ createdAt: -1 })
       .populate("captain", "fullName")
-      .select("pickup destination fare status captain createdAt duration distance");
+      .select(
+        "pickup destination fare status captain createdAt duration distance"
+      );
 
     return rides;
   } catch (error) {
     throw new AppError(error.message || "Error fetching user rides", 500);
   }
+};
+
+const getCaptainRides = async (captainId) => {
+  try {
+    // Validate captainId
+    if (!captainId) {
+      throw new Error("Captain ID is required");
+    }
+
+    // Find all rides where the captain matches the given captainId
+    const rides = await rideModel
+      .find({ captain: captainId, status: { $in: ["completed", "cancelled"] } })
+      .populate("user", "fullName.firstName fullName.lastName email")
+      .sort({ createdAt: -1 }); // Sort by most recent first
+
+    // Calculate total earnings
+    const totalEarnings = rides.reduce(
+      (total, ride) => total + (ride.fare || 0),
+      0
+    );
+
+    return {
+      rides,
+      totalRides: rides.length,
+      totalEarnings,
+    };
+  } catch (error) {
+    console.error("Error in getCaptainRides:", error);
+    throw new Error(`Failed to retrieve captain rides: ${error.message}`);
+  }
+};
+
+module.exports = {
+  createRide,
+  getAllRides,
+  getUserRides,
+  getCaptainRides,
 };

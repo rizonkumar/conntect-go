@@ -16,17 +16,19 @@ export const captainLogin = (data) => {
 // Get access token based on user type
 export const getAccessToken = (userType = "user") => {
   // First try to get the specific token type
-  const token = userType === "captain" 
-    ? localStorage.getItem("captainToken") 
-    : localStorage.getItem("userToken");
-  
+  const token =
+    userType === "captain"
+      ? localStorage.getItem("captainToken")
+      : localStorage.getItem("userToken");
+
   if (token) return token;
-  
+
   // If no specific token found, try the other type
-  const alternativeToken = userType === "captain"
-    ? localStorage.getItem("userToken")
-    : localStorage.getItem("captainToken");
-    
+  const alternativeToken =
+    userType === "captain"
+      ? localStorage.getItem("userToken")
+      : localStorage.getItem("captainToken");
+
   return alternativeToken || null;
 };
 
@@ -68,5 +70,5 @@ export const refreshToken = (userType = "user") => {
 export const logout = (userType = "user") => {
   const url =
     userType === "captain" ? "/api/captains/logout" : "/api/users/logout";
-  return generalApi.GeneralApi.post(url);
+  return generalApi.GeneralApi.get(url);
 };

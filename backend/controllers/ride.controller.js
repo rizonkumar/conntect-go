@@ -49,8 +49,38 @@ const getUserRides = async (req, res, next) => {
   }
 };
 
+const getCaptainRides = async (req, res) => {
+  try {
+    // Get captain ID from authenticated request
+    const captainId = req.captain._id;
+
+    // Fetch captain rides
+    const { rides, totalRides, totalEarnings } = await rideService.getCaptainRides(captainId);
+
+    // Respond with success
+    return res.status(200).json({
+      success: true,
+      data: {
+        rides,
+        totalRides,
+        totalEarnings
+      }
+    });
+  } catch (error) {
+    console.error('Error in getCaptainRides controller:', error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to retrieve captain rides',
+      error: {
+        statusCode: 500
+      }
+    });
+  }
+};
+
 module.exports = {
   createRide,
   getAllRides,
   getUserRides,
+  getCaptainRides,
 };
