@@ -148,3 +148,27 @@ module.exports.logoutUser = async (req, res, next) => {
     message: "User logged out successfully",
   });
 };
+
+module.exports.requestPasswordReset = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    // Validate email input
+    if (!email) {
+      return next(new AppError("Email is required", 400));
+    }
+
+    // Call service method to handle password reset
+    const resetToken = await userService.requestPasswordReset(email);
+
+    res.status(200).json({
+      success: true,
+      message: "Password reset instructions sent to your email",
+      data: {
+        resetToken: resetToken ? "Token generated successfully" : null,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};

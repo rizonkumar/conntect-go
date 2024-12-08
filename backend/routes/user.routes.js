@@ -7,6 +7,8 @@ const {
   loginUser,
   getUserProfile,
   logoutUser,
+  requestPasswordReset,
+  resetPassword,
 } = require("../controllers/user.controller");
 const { authUser } = require("../middleware/auth.middleware");
 
@@ -38,5 +40,11 @@ router.post(
 router.get("/profile", authUser, getUserProfile);
 
 router.get("/logout", authUser, logoutUser);
+
+// Route to request password reset
+router.post("/requestPasswordReset", requestPasswordReset);
+
+// Route to reset password
+router.post("/resetPassword", resetPassword);
 
 module.exports = router;
