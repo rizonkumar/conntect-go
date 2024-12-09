@@ -969,3 +969,51 @@ Fares are calculated based on the following rates:
    - Minimum fare: ₹20
 
 Note: Distance is calculated using Google Maps Distance Matrix API.
+
+### Get Ride Fare Estimate
+
+Calculates fare estimates for different vehicle types based on pickup and destination locations.
+
+**Endpoint:** `GET /api/rides/fare`
+
+**Authentication:** Required (User must be logged in)
+
+**Query Parameters:**
+- `pickup`: String, Full pickup location address
+- `destination`: String, Full destination address
+
+**Success Response:**
+- **Status Code:** 200 (OK)
+
+```json
+{
+  "status": "success",
+  "message": "Fares calculated successfully",
+  "data": {
+    "fares": {
+      "auto": 517,
+      "car": 700,
+      "motorcycle": 410
+    }
+  }
+}
+```
+
+**Error Responses:**
+1. Unauthorized
+- **Status Code:** 401 (Unauthorized)
+```json
+{
+  "success": false,
+  "message": "Unauthorized: Login required"
+}
+```
+
+2. Invalid or Missing Parameters
+- **Status Code:** 400 (Bad Request)
+```json
+{
+  "success": false,
+  "message": "Pickup and destination are required"
+}
+```

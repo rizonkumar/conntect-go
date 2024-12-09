@@ -3,13 +3,9 @@ const AppError = require("../utils/AppError");
 const mapService = require("../services/map.service");
 const crypto = require("crypto");
 
-async function getFare(pickup, destination, vehicleType) {
+async function getFare(pickup, destination) {
   if (!pickup || !destination) {
     throw new AppError("Pickup and destination are required", 400);
-  }
-
-  if (!vehicleType) {
-    throw new AppError("Vehicle type is required", 400);
   }
 
   // Base fares and per kilometer rates for different vehicle types
@@ -31,21 +27,18 @@ async function getFare(pickup, destination, vehicleType) {
     },
   };
 
-  if (!fareRates[vehicleType]) {
-    throw new AppError("Invalid vehicle type", 400);
+  const distance = await mapService.getDistanceTime(pickup, destination);
+
+  // Calculate fares for all vehicle types
+  const fares = {};
+  for (const [vehicleType, rate] of Object.entries(fareRates)) {
+    let fare = rate.baseFare + distance * rate.perKm;
+    // Ensure fare is not less than minimum fare
+    fare = Math.max(fare, rate.minFare);
+    fares[vehicleType] = Math.round(fare);
   }
 
-  const distance = await mapService.getDistanceTime(pickup, destination);
-  const rate = fareRates[vehicleType];
-
-  // Calculate fare
-  let fare = rate.baseFare + distance * rate.perKm;
-
-  // Ensure fare is not less than minimum fare
-  fare = Math.max(fare, rate.minFare);
-
-  // Round to nearest integer
-  return Math.round(fare);
+  return fares;
 }
 
 function getOTP(num) {
@@ -58,7 +51,8 @@ const createRide = async ({ user, pickup, destination }) => {
     throw new AppError("User, pickup and destination are required", 400);
   }
 
-  const fare = await getFare(pickup, destination, user.vehicleType);
+  const fares = await getFare(pickup, destination);
+  const fare = fares[user.vehicleType];
   const otp = getOTP(4);
 
   const ride = await rideModel.create({
@@ -141,4 +135,5 @@ module.exports = {
   getAllRides,
   getUserRides,
   getCaptainRides,
+  getFare,
 };

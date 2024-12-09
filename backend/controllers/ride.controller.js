@@ -55,7 +55,8 @@ const getCaptainRides = async (req, res) => {
     const captainId = req.captain._id;
 
     // Fetch captain rides
-    const { rides, totalRides, totalEarnings } = await rideService.getCaptainRides(captainId);
+    const { rides, totalRides, totalEarnings } =
+      await rideService.getCaptainRides(captainId);
 
     // Respond with success
     return res.status(200).json({
@@ -63,18 +64,34 @@ const getCaptainRides = async (req, res) => {
       data: {
         rides,
         totalRides,
-        totalEarnings
-      }
+        totalEarnings,
+      },
     });
   } catch (error) {
-    console.error('Error in getCaptainRides controller:', error);
+    console.error("Error in getCaptainRides controller:", error);
     return res.status(500).json({
       success: false,
-      message: error.message || 'Failed to retrieve captain rides',
+      message: error.message || "Failed to retrieve captain rides",
       error: {
-        statusCode: 500
-      }
+        statusCode: 500,
+      },
     });
+  }
+};
+
+const getFare = async (req, res, next) => {
+  try {
+    const { pickup, destination } = req.query;
+
+    const fares = await rideService.getFare(pickup, destination);
+
+    res.status(200).json({
+      status: "success",
+      message: "Fares calculated successfully",
+      data: { fares },
+    });
+  } catch (error) {
+    next(new AppError(error.message || "Error calculating fares", 500));
   }
 };
 
@@ -83,4 +100,5 @@ module.exports = {
   getAllRides,
   getUserRides,
   getCaptainRides,
+  getFare,
 };
