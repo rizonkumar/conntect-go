@@ -10,6 +10,7 @@ let GeneralApi = axios.create({
     "Content-Type": "application/json",
     accept: "application/json",
   },
+  withCredentials: true,
 });
 
 GeneralApi.interceptors.request.use(

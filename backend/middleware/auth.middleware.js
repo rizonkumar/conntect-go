@@ -8,11 +8,10 @@ const captainModel = require("../models/captain.model");
 module.exports.authUser = async (req, res, next) => {
   try {
     let token;
-    if (
-      req.headers.authorization &&
-      req.headers.authorization.startsWith("Bearer")
-    ) {
-      token = req.headers.authorization.split(" ")[1];
+    const authHeader = req.headers.authorization;
+
+    if (authHeader && authHeader.startsWith("Bearer")) {
+      token = authHeader.split(" ")[1];
     } else if (req.cookies.token) {
       token = req.cookies.token;
     }
@@ -21,14 +20,16 @@ module.exports.authUser = async (req, res, next) => {
       return next(new AppError("No token provided. Please login first", 401));
     }
 
-    const isBlacklisted = await blacklistTokenModel.findOne({ token: token });
+    // Verify token before checking blacklist
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Check blacklist
+    const isBlacklisted = await blacklistTokenModel.findOne({ token });
     if (isBlacklisted) {
-      return next(new AppError("Token is blacklisted", 401));
+      return next(new AppError("Token is invalid", 401));
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await userModel.findById(decoded._id);
-
     if (!user) {
       return next(new AppError("User not found", 401));
     }
@@ -49,11 +50,10 @@ module.exports.authUser = async (req, res, next) => {
 module.exports.authCaptain = async (req, res, next) => {
   try {
     let token;
-    if (
-      req.headers.authorization &&
-      req.headers.authorization.startsWith("Bearer")
-    ) {
-      token = req.headers.authorization.split(" ")[1];
+    const authHeader = req.headers.authorization;
+
+    if (authHeader && authHeader.startsWith("Bearer")) {
+      token = authHeader.split(" ")[1];
     } else if (req.cookies.token) {
       token = req.cookies.token;
     }
@@ -62,19 +62,21 @@ module.exports.authCaptain = async (req, res, next) => {
       return next(new AppError("No token provided. Please login first", 401));
     }
 
-    const isBlacklisted = await blacklistTokenModel.findOne({ token: token });
-    if (isBlacklisted) {
-      return next(new AppError("Token is blacklisted", 401));
-    }
-
+    // Verify token before checking blacklist
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const captain = await captainModel.findById(decoded._id);
 
-    if (!captain) {
-      return next(new AppError("User not found", 401));
+    // Check blacklist
+    const isBlacklisted = await blacklistTokenModel.findOne({ token });
+    if (isBlacklisted) {
+      return next(new AppError("Token is invalid", 401));
     }
 
-    // Comment this code for now
+    const captain = await captainModel.findById(decoded._id);
+    if (!captain) {
+      return next(new AppError("Captain not found", 401));
+    }
+
+    // Uncomment when status check is needed
     // if (captain.status === "inactive") {
     //   return next(new AppError("Captain account is inactive", 403));
     // }

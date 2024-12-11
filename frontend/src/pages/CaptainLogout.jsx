@@ -7,9 +7,11 @@ export const CaptainLogout = () => {
 
   const handleLogout = useCallback(async () => {
     try {
-      await logout('captain');
-      localStorage.removeItem("captainToken");
-      navigate("/", { replace: true });
+      const response = await logout("captain");
+      if (response.status === 200) {
+        localStorage.removeItem("captainToken");
+        navigate("/", { replace: true });
+      }
     } catch (error) {
       console.error("Logout failed:", error);
       navigate("/", { replace: true });

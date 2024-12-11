@@ -7,9 +7,11 @@ const UserLogout = () => {
 
   const handleLogout = useCallback(async () => {
     try {
-      await logout("user");
-      localStorage.removeItem("userToken");
-      navigate("/", { replace: true });
+      const response = await logout("user");
+      if (response.status === 200) {
+        localStorage.removeItem("userToken");
+        navigate("/", { replace: true });
+      }
     } catch (error) {
       console.error("Logout failed:", error);
       navigate("/", { replace: true });
