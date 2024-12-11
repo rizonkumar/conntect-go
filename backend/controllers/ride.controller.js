@@ -1,4 +1,5 @@
 const rideService = require("../services/ride.service");
+const mapService = require("../services/map.service");
 const AppError = require("../utils/AppError");
 
 const createRide = async (req, res, next) => {
@@ -95,10 +96,56 @@ const getFare = async (req, res, next) => {
   }
 };
 
+const getETA = async (req, res, next) => {
+  try {
+    const { pickup, destination } = req.query;
+
+    // Validate input
+    if (!pickup || !destination) {
+      return res.status(400).json({
+        status: "error",
+        message: "Pickup and destination addresses are required",
+      });
+    }
+
+    // Get coordinates for pickup and destination
+    const pickupCoords = await mapService.getAddressCoordinates(pickup);
+    const destinationCoords = await mapService.getAddressCoordinates(
+      destination
+    );
+
+    const { travelTime, distance } = await rideService.calculateETA(
+      { latitude: pickupCoords.lat, longitude: pickupCoords.lng },
+      { latitude: destinationCoords.lat, longitude: destinationCoords.lng }
+    );
+
+    res.status(200).json({
+      status: "success",
+      message: "ETA calculated successfully",
+      data: {
+        ride: {
+          estimatedTravelTime: travelTime,
+          estimatedTravelTimeLabel: `${travelTime} min ride`,
+          totalDistance: distance,
+          distanceLabel: `Approx. ${distance} away`,
+        },
+        details: {
+          pickupAddress: pickup,
+          destinationAddress: destination,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("ETA Calculation Error:", error);
+    next(new AppError(error.message || "Error calculating ETA", 500));
+  }
+};
+
 module.exports = {
   createRide,
   getAllRides,
   getUserRides,
   getCaptainRides,
   getFare,
+  getETA,
 };

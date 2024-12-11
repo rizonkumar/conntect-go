@@ -9,7 +9,6 @@ module.exports.getAddressCoordinates = async (address) => {
       `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${process.env.GOOGLE_MAPS_API_KEY}`
     );
 
-    console.log("Google Maps API Response:", response.data);
     if (!response.data.results?.length) {
       throw new Error("No results found for the given address", 400);
     }
@@ -72,5 +71,71 @@ module.exports.getAutoCompleteSuggestions = async (input) => {
     }
   } catch (error) {
     throw new AppError(error.message, 500);
+  }
+};
+
+// TODO: Driver ETA Implementation Roadmap
+/**
+ * Driver ETA Calculation Feature
+ *
+ * Current Status: Placeholder method exists
+ *
+ * Implementation Steps:
+ * 1. Rider Availability Tracking
+ *    - Create a system to track available riders/drivers
+ *    - Store their real-time location in the database
+ *    - Implement WebSocket or real-time location updates
+ *
+ * 2. Nearest Driver Selection
+ *    - Develop an algorithm to find the closest available driver
+ *    - Calculate distance and estimated time to pickup
+ *    - Consider driver's current status (online, busy, available)
+ *
+ * 3. ETA Calculation Enhancements
+ *    - Integrate with existing calculateDriverETA method
+ *    - Add caching mechanism to reduce API calls
+ *    - Implement fallback mechanisms for location tracking
+ *
+ * 4. Frontend Integration
+ *    - Update RideOptions to display driver ETA
+ *    - Add real-time updates for driver location
+ *    - Show driver's estimated arrival time
+ *
+ * Considerations:
+ * - Privacy: Ensure user location data is securely handled
+ * - Performance: Optimize location tracking and ETA calculations
+ * - Accuracy: Use multiple data sources for location verification
+ *
+ * Potential Technologies:
+ * - WebSockets for real-time updates
+ * - Geospatial indexing in MongoDB
+ * - Background job for location tracking
+ */
+
+module.exports.calculateDriverETA = async (driverLocation, pickupLocation) => {
+  try {
+    const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+    const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(
+      `${driverLocation.lat},${driverLocation.lng}`
+    )}&destinations=${encodeURIComponent(
+      `${pickupLocation.lat},${pickupLocation.lng}`
+    )}&key=${apiKey}`;
+
+    const response = await axios.get(url);
+
+    if (response.data.status === "OK") {
+      const element = response.data.rows[0].elements[0];
+
+      if (element.status === "OK") {
+        // Return duration in minutes
+        return Math.ceil(element.duration.value / 60);
+      } else {
+        throw new AppError("Unable to calculate driver ETA", 400);
+      }
+    } else {
+      throw new AppError("Distance Matrix API error", 500);
+    }
+  } catch (error) {
+    throw new AppError(error.message || "Error calculating driver ETA", 400);
   }
 };
