@@ -120,19 +120,20 @@ export const LocationsPanel = ({
   return (
     <div
       ref={panelRef}
-      className="fixed inset-0 bg-white z-50 transform translate-y-full locations-panel"
-      style={{ height: "calc(100vh)" }}
+      className="fixed inset-0 bg-white z-50 transform translate-y-full"
+      style={{ height: "100vh" }}
     >
       {isSearchMode ? (
+        // Search Mode UI
         <div className="h-full flex flex-col">
-          {/* Search Header */}
-          <div className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-10">
-            <div className="flex items-center gap-3 p-4">
+          {/* Enhanced Search Header */}
+          <div className="fixed top-0 left-0 right-0 bg-white shadow-sm z-10">
+            <div className="flex items-center gap-4 p-4">
               <button
                 onClick={handleBack}
-                className="p-2 hover:bg-gray-100 rounded-full"
+                className="p-2 hover:bg-gray-100 rounded-full transition-all focus:ring-2 focus:ring-gray-200 focus:outline-none"
               >
-                <ArrowLeft className="h-5 w-5" />
+                <ArrowLeft className="h-5 w-5 text-gray-700" />
               </button>
 
               <div className="relative flex-1">
@@ -143,13 +144,13 @@ export const LocationsPanel = ({
                   placeholder={`Enter ${
                     activeInput === "pickup" ? "pickup" : "dropoff"
                   } location`}
-                  className="w-full bg-gray-100 p-3 pr-10 rounded-lg focus:outline-none"
+                  className="w-full bg-gray-50 p-4 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                   autoFocus
                 />
                 {searchQuery && (
                   <button
                     onClick={clearInput}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-200 rounded-full"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 hover:bg-gray-200 rounded-full transition-all"
                   >
                     <X className="h-4 w-4 text-gray-500" />
                   </button>
@@ -158,26 +159,29 @@ export const LocationsPanel = ({
             </div>
           </div>
 
-          {/* Search Results */}
+          {/* Enhanced Search Results */}
           <div className="flex-1 overflow-y-auto px-4 pt-20 pb-4">
             {isLoading ? (
-              <div className="text-center text-gray-500 py-8">
-                Loading suggestions...
+              <div className="flex items-center justify-center py-8 space-x-2">
+                <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-900 border-t-transparent"></div>
+                <span className="text-gray-600">Searching locations...</span>
               </div>
             ) : suggestions.length > 0 ? (
               <div className="space-y-3">
                 {suggestions.map((location) => (
                   <div
                     key={location.place_id}
-                    className="flex items-start gap-4 p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors"
                     onClick={() => handleLocationSelect(location)}
+                    className="flex items-start gap-4 p-4 hover:bg-gray-50 rounded-xl cursor-pointer transition-all border border-gray-100 hover:border-gray-200"
                   >
-                    <div className="p-2 bg-gray-100 rounded-full">
-                      <MapPin className="h-5 w-5 text-gray-600" />
+                    <div className="p-2.5 bg-blue-50 rounded-full">
+                      <MapPin className="h-5 w-5 text-blue-600" />
                     </div>
                     <div>
-                      <h4 className="font-medium">{location.description}</h4>
-                      <p className="text-sm text-gray-500">
+                      <h4 className="font-medium text-gray-900">
+                        {location.description}
+                      </h4>
+                      <p className="text-sm text-gray-500 mt-0.5">
                         {location.structured_formatting?.secondary_text || ""}
                       </p>
                     </div>
@@ -185,27 +189,37 @@ export const LocationsPanel = ({
                 ))}
               </div>
             ) : searchQuery ? (
-              <div className="text-center text-gray-500 py-8">
-                No locations found for "{searchQuery}"
+              <div className="text-center py-12">
+                <div className="bg-gray-50 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <MapPin className="h-8 w-8 text-gray-400" />
+                </div>
+                <p className="text-gray-600">
+                  No locations found for "{searchQuery}"
+                </p>
               </div>
             ) : null}
           </div>
         </div>
       ) : (
-        <div className="flex flex-col h-full">
-          <div className="px-4 pt-4">
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100"
-            >
-              <X className="h-6 w-6" />
-            </button>
-            <h1 className="text-2xl font-bold mb-6">Get a ride</h1>{" "}
-            <div className="space-y-4 pb-4">
-              {/* Pickup Input */}
+        // Main Panel UI
+        <div className="flex flex-col h-full bg-gray-50">
+          {/* Enhanced Header */}
+          <div className="px-6 pt-6 pb-4 bg-white">
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="text-2xl font-bold text-gray-900">Get a ride</h1>
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-gray-100 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-gray-200"
+              >
+                <X className="h-6 w-6 text-gray-600" />
+              </button>
+            </div>
+
+            {/* Enhanced Location Inputs */}
+            <div className="space-y-4">
               <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                  <Circle className="h-5 w-5 text-gray-600" />
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-blue-50 rounded-full">
+                  <Circle className="h-5 w-5 text-blue-600" />
                 </div>
                 <input
                   type="text"
@@ -213,14 +227,13 @@ export const LocationsPanel = ({
                   onChange={(e) => setPickup(e.target.value)}
                   onFocus={() => handleInputFocus("pickup")}
                   placeholder="Pickup location"
-                  className="w-full bg-gray-100 p-4 pl-12 rounded-lg focus:outline-none"
+                  className="w-full bg-white p-4 pl-16 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                 />
               </div>
 
-              {/* Dropoff Input */}
               <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                  <Square className="h-5 w-5 text-gray-600" />
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-blue-50 rounded-full">
+                  <Square className="h-5 w-5 text-blue-600" />
                 </div>
                 <input
                   type="text"
@@ -228,29 +241,36 @@ export const LocationsPanel = ({
                   onChange={(e) => setDropoff(e.target.value)}
                   onFocus={() => handleInputFocus("dropoff")}
                   placeholder="Dropoff location"
-                  className="w-full bg-gray-100 p-4 pl-12 rounded-lg focus:outline-none"
+                  className="w-full bg-white p-4 pl-16 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                 />
               </div>
 
-              {/* Time Selector */}
-              <button className="w-full flex items-center justify-between p-4 bg-gray-100 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <Clock className="h-5 w-5 text-gray-600" />
-                  <span>Pickup now</span>
+              {/* Enhanced Time Selector */}
+              <button className="w-full flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all">
+                <div className="flex items-center gap-4">
+                  <div className="p-2 bg-blue-50 rounded-full">
+                    <Clock className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <span className="font-medium text-gray-900">Pickup now</span>
                 </div>
                 <ChevronDown className="h-5 w-5 text-gray-600" />
               </button>
 
-              {/* Search Button */}
+              {/* Enhanced Search Button */}
               {pickup && dropoff && (
                 <button
                   onClick={handleSearch}
-                  className="w-full bg-black text-white p-4 rounded-lg font-medium"
+                  className="w-full bg-black text-white p-4 rounded-xl font-medium text-lg hover:bg-gray-900 active:bg-gray-800 transition-all focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2"
                 >
                   Search
                 </button>
               )}
             </div>
+          </div>
+
+          {/* Map Preview Area (Optional) */}
+          <div className="flex-1 bg-gray-100">
+            {/* Add map preview here if needed */}
           </div>
         </div>
       )}

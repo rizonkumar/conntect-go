@@ -2,6 +2,9 @@ const rideModel = require("../models/ride.model");
 const AppError = require("../utils/AppError");
 const mapService = require("../services/map.service");
 const crypto = require("crypto");
+const axios = require("axios");
+
+const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
 async function getFare(pickup, destination) {
   if (!pickup || !destination) {
@@ -130,10 +133,77 @@ const getCaptainRides = async (captainId) => {
   }
 };
 
+const calculateETA = async (pickup, destination) => {
+  if (!pickup || !destination) {
+    throw new AppError("Pickup and destination are required", 400);
+  }
+
+  try {
+    const origins = `${pickup.latitude},${pickup.longitude}`;
+    const destinations = `${destination.latitude},${destination.longitude}`;
+
+    const response = await axios.get(
+      "https://maps.googleapis.com/maps/api/distancematrix/json",
+      {
+        params: {
+          origins,
+          destinations,
+          key: GOOGLE_MAPS_API_KEY,
+        },
+      }
+    );
+
+    // Detailed error handling
+    if (!response.data || !response.data.rows) {
+      console.error('Invalid response from Google Maps API:', response.data);
+      throw new Error("No response from distance matrix API");
+    }
+
+    const rows = response.data.rows;
+    if (!rows[0] || !rows[0].elements) {
+      console.error('Invalid rows in response:', rows);
+      throw new Error("No elements in distance matrix response");
+    }
+
+    const elements = rows[0].elements;
+    if (!elements[0] || elements[0].status !== "OK") {
+      console.error('Invalid element status:', elements);
+      throw new Error("Unable to calculate route");
+    }
+
+    // Extract travel time
+    const travelTime = elements[0].duration;
+    if (!travelTime || !travelTime.text) {
+      console.error('No duration in response:', elements[0]);
+      throw new Error("Unable to determine route duration");
+    }
+
+    // Parse travel time text (e.g., "10 mins")
+    const travelTimeInMinutes = parseInt(travelTime.text, 10);
+
+    if (isNaN(travelTimeInMinutes)) {
+      console.error('Could not parse duration:', travelTime.text);
+      throw new Error("Invalid duration format");
+    }
+
+    return {
+      travelTime: travelTimeInMinutes,
+      distance: elements[0].distance.text
+    };
+  } catch (error) {
+    console.error("Detailed ETA Calculation Error:", error);
+    throw new AppError(
+      error.message || "Failed to calculate ETA from Google Maps",
+      500
+    );
+  }
+};
+
 module.exports = {
   createRide,
   getAllRides,
   getUserRides,
   getCaptainRides,
   getFare,
+  calculateETA,
 };

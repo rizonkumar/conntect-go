@@ -16,3 +16,12 @@ export const getFares = async (pickup, dropoff) => {
     },
   });
 };
+
+export const getETA = async (pickup, dropoff) => {
+  return generalApi.GeneralApi.get("/api/rides/eta", {
+    params: {
+      pickup,
+      destination: dropoff,
+    },
+  });
+};
