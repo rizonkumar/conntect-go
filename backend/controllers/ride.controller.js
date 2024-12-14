@@ -108,33 +108,46 @@ const getETA = async (req, res, next) => {
       });
     }
 
-    // Get coordinates for pickup and destination
-    const pickupCoords = await mapService.getAddressCoordinates(pickup);
-    const destinationCoords = await mapService.getAddressCoordinates(
-      destination
-    );
+    try {
+      const pickupCoords = await mapService.getAddressCoordinates(pickup);
+      const destinationCoords =
+        await mapService.getAddressCoordinates(destination);
 
-    const { travelTime, distance } = await rideService.calculateETA(
-      { latitude: pickupCoords.lat, longitude: pickupCoords.lng },
-      { latitude: destinationCoords.lat, longitude: destinationCoords.lng }
-    );
+      if (!pickupCoords || !destinationCoords) {
+        next(
+          new AppError(
+            "Unable to get coordinates for the provided addresses",
+            400,
+          ),
+        );
+      }
 
-    res.status(200).json({
-      status: "success",
-      message: "ETA calculated successfully",
-      data: {
-        ride: {
-          estimatedTravelTime: travelTime,
-          estimatedTravelTimeLabel: `${travelTime} min ride`,
-          totalDistance: distance,
-          distanceLabel: `Approx. ${distance} away`,
+      const { travelTime, distance, formattedTime } =
+        await rideService.calculateETA(
+          { latitude: pickupCoords.lat, longitude: pickupCoords.lng },
+          { latitude: destinationCoords.lat, longitude: destinationCoords.lng },
+        );
+
+      res.status(200).json({
+        status: "success",
+        message: "ETA calculated successfully",
+        data: {
+          ride: {
+            estimatedTravelTime: travelTime,
+            estimatedTravelTimeLabel: formattedTime,
+            totalDistance: distance,
+            distanceLabel: `Approx. ${distance} away`,
+          },
+          details: {
+            pickupAddress: pickup,
+            destinationAddress: destination,
+          },
         },
-        details: {
-          pickupAddress: pickup,
-          destinationAddress: destination,
-        },
-      },
-    });
+      });
+    } catch (error) {
+      console.error("Geocoding or ETA calculation error:", error);
+      next(new AppError(error.message || "Error calculating route", 500));
+    }
   } catch (error) {
     console.error("ETA Calculation Error:", error);
     next(new AppError(error.message || "Error calculating ETA", 500));

@@ -94,7 +94,7 @@ const getUserRides = async (userId) => {
       .sort({ createdAt: -1 })
       .populate("captain", "fullName")
       .select(
-        "pickup destination fare status captain createdAt duration distance"
+        "pickup destination fare status captain createdAt duration distance",
       );
 
     return rides;
@@ -119,7 +119,7 @@ const getCaptainRides = async (captainId) => {
     // Calculate total earnings
     const totalEarnings = rides.reduce(
       (total, ride) => total + (ride.fare || 0),
-      0
+      0,
     );
 
     return {
@@ -135,7 +135,7 @@ const getCaptainRides = async (captainId) => {
 
 const calculateETA = async (pickup, destination) => {
   if (!pickup || !destination) {
-    throw new AppError("Pickup and destination are required", 400);
+    throw new AppError("Pickup and destination coordinates are required", 400);
   }
 
   try {
@@ -149,52 +149,60 @@ const calculateETA = async (pickup, destination) => {
           origins,
           destinations,
           key: GOOGLE_MAPS_API_KEY,
+          mode: "driving",
+          departure_time: "now",
+          traffic_model: "best_guess",
         },
-      }
+      },
     );
 
-    // Detailed error handling
-    if (!response.data || !response.data.rows) {
-      console.error('Invalid response from Google Maps API:', response.data);
-      throw new Error("No response from distance matrix API");
+    // Validate API response
+    if (!response.data || !response.data.rows || !response.data.rows[0]) {
+      console.error("Invalid response from Google Maps API:", response.data);
+      throw new Error("Invalid response from distance matrix API");
     }
 
-    const rows = response.data.rows;
-    if (!rows[0] || !rows[0].elements) {
-      console.error('Invalid rows in response:', rows);
-      throw new Error("No elements in distance matrix response");
-    }
+    const elements = response.data.rows[0].elements;
 
-    const elements = rows[0].elements;
-    if (!elements[0] || elements[0].status !== "OK") {
-      console.error('Invalid element status:', elements);
+    if (!elements || !elements[0] || elements[0].status !== "OK") {
+      console.error("Route calculation failed:", elements);
       throw new Error("Unable to calculate route");
     }
 
-    // Extract travel time
-    const travelTime = elements[0].duration;
-    if (!travelTime || !travelTime.text) {
-      console.error('No duration in response:', elements[0]);
-      throw new Error("Unable to determine route duration");
+    // Extract duration and distance
+    const duration = elements[0].duration;
+    const distance = elements[0].distance;
+
+    if (!duration || !distance) {
+      console.error("Missing duration or distance in response:", elements[0]);
+      throw new Error("Unable to determine route duration or distance");
     }
 
-    // Parse travel time text (e.g., "10 mins")
-    const travelTimeInMinutes = parseInt(travelTime.text, 10);
+    // Get duration in seconds and convert to minutes
+    const durationInSeconds = duration.value;
+    const travelTimeInMinutes = Math.ceil(durationInSeconds / 60);
 
-    if (isNaN(travelTimeInMinutes)) {
-      console.error('Could not parse duration:', travelTime.text);
-      throw new Error("Invalid duration format");
+    // Format time for display
+    let formattedTime;
+    if (travelTimeInMinutes >= 60) {
+      const hours = Math.floor(travelTimeInMinutes / 60);
+      const minutes = travelTimeInMinutes % 60;
+      formattedTime =
+        minutes > 0 ? `${hours} hr ${minutes} min ride` : `${hours} hr ride`;
+    } else {
+      formattedTime = `${travelTimeInMinutes} min ride`;
     }
 
     return {
       travelTime: travelTimeInMinutes,
-      distance: elements[0].distance.text
+      distance: distance.text,
+      formattedTime,
     };
   } catch (error) {
     console.error("Detailed ETA Calculation Error:", error);
     throw new AppError(
       error.message || "Failed to calculate ETA from Google Maps",
-      500
+      500,
     );
   }
 };
