@@ -1,8 +1,9 @@
-import React, { useState, useContext } from "react";
+import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, AlertCircle } from "lucide-react";
 import { CaptainDataContext } from "../context/CaptainContext";
 import { captainLogin } from "../api/authApi";
+import { InputField } from "../components/common/InputField.jsx";
 
 const CaptainSignup = () => {
   const navigate = useNavigate();
