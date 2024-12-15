@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { User, Circle, Square, Clock, ChevronDown, LogOut } from "lucide-react";
 import { LocationsPanel } from "../components/LocationsPanel";
@@ -29,7 +29,6 @@ const Home = () => {
 
     setPanelOpen(false);
     setShowRideOptions(true);
-    console.log("Searching ride from", pickup, "to", dropoff);
   };
 
   const handleBackFromRides = () => {
@@ -39,20 +38,20 @@ const Home = () => {
   const handleLogout = async () => {
     try {
       // Determine if user is captain or regular user
-      const userType = captain ? 'captain' : 'user';
+      const userType = captain ? "captain" : "user";
       await logout(userType);
-      
+
       // Clear user state
       setUser({
         email: "",
         fullName: { firstName: "", lastName: "" },
       });
       setCaptain(null);
-      
+
       // Clear tokens
       localStorage.removeItem("userToken");
       localStorage.removeItem("captainToken");
-      
+
       // Redirect to Welcome page
       navigate("/");
     } catch (error) {

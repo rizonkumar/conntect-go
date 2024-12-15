@@ -117,6 +117,7 @@ const RideOptions = ({ pickup, dropoff, onBack }) => {
       <RideConfirm
         selectedRide={selectedRide}
         pickup={pickup}
+        dropoff={dropoff}
         onNext={() => {
           setShowConfirm(false);
           setShowConfirmation(true);

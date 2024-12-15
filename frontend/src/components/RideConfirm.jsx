@@ -1,7 +1,8 @@
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import { MapPin, ArrowLeft, Clock } from "lucide-react";
+import { createRide } from "../api/userApi";
 
-const RideConfirm = ({ selectedRide, pickup, onNext, onBack }) => {
+const RideConfirm = ({ selectedRide, pickup, dropoff, onNext, onBack }) => {
   const handleBackClick = useCallback(
     (e) => {
       e.preventDefault();
@@ -10,8 +11,42 @@ const RideConfirm = ({ selectedRide, pickup, onNext, onBack }) => {
         onBack();
       }
     },
-    [onBack]
+    [onBack],
   );
+
+  const handleConfirm = async () => {
+    try {
+      if (!pickup || !dropoff) {
+        console.error("Pickup and destination are required");
+        return;
+      }
+
+      let vehicleType;
+      switch (selectedRide.name) {
+        case "Connect Auto":
+          vehicleType = "auto";
+          break;
+        case "Premier":
+          vehicleType = "car";
+          break;
+
+        case "Connect Moto":
+          vehicleType = "motorcycle";
+          break;
+
+        default:
+          vehicleType = "auto";
+      }
+
+      const response = await createRide(pickup, dropoff, vehicleType);
+
+      if (response.data.status === "success") {
+        onNext();
+      }
+    } catch (error) {
+      console.error("Error Creating Ride", error);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-gray-50 z-50 flex flex-col">
@@ -40,8 +75,8 @@ const RideConfirm = ({ selectedRide, pickup, onNext, onBack }) => {
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg">
             <img
-              src={selectedRide.icon}
-              alt={selectedRide.name}
+              src={selectedRide?.icon}
+              alt={selectedRide?.name}
               className="w-16 h-16 object-contain"
             />
           </div>
@@ -64,8 +99,8 @@ const RideConfirm = ({ selectedRide, pickup, onNext, onBack }) => {
           <div className="bg-gray-50 rounded-xl p-4">
             <div className="flex items-start gap-4">
               <img
-                src={selectedRide.icon}
-                alt={selectedRide.name}
+                src={selectedRide?.icon}
+                alt={selectedRide?.name}
                 className="w-14 h-14 object-contain"
               />
               <div className="flex-1">
@@ -108,7 +143,7 @@ const RideConfirm = ({ selectedRide, pickup, onNext, onBack }) => {
 
           {/* Confirm Button */}
           <button
-            onClick={onNext}
+            onClick={handleConfirm}
             className="w-full bg-[#4CAF50] hover:bg-[#45a049] text-white py-4 rounded-xl text-lg font-medium transition-colors cursor-pointer"
           >
             Confirm
