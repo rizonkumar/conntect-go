@@ -23,7 +23,7 @@ GeneralApi.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 GeneralApi.interceptors.response.use(
@@ -32,10 +32,6 @@ GeneralApi.interceptors.response.use(
   },
   (error) => {
     if (error.response) {
-      console.log("Response Error Data:", error.response.data);
-      console.log("Response Error Status:", error.response.status);
-      console.log("Response Error Headers:", error.response.headers);
-
       if (
         error.response.status === 409 ||
         error.response.status === 400 ||
@@ -52,17 +48,17 @@ GeneralApi.interceptors.response.use(
       }
       handleAuthFailure(error.response.status);
     } else if (error.request) {
-      console.log("Request Error:", error.request);
+      console.error("Request Error:", error.request);
     } else {
-      console.log("Error Message:", error.message);
+      console.error("Error Message:", error.message);
     }
     if (error.message === "Network Error") {
-      console.log("Network Error Occurred");
+      console.error("Network Error Occurred");
     }
-    console.log("Error Config:", error.config);
+    console.error("Error Config:", error.config);
 
     return Promise.resolve(error);
-  }
+  },
 );
 
 export default { GeneralApi };

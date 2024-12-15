@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   MapPin,
   Circle,
   Power,
   Navigation2,
-  Clock,
   CreditCard,
   ThumbsUp,
   ThumbsDown,
@@ -15,8 +14,6 @@ import RideConfirmationCaptain from "./RideConfirmationCaptain";
 const ActiveStatus = ({ onIgnore, onToggleOnline, isOnline, onAcceptRide }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const { passenger, ride } = activeRideRequest;
-
-  console.log("Confirmation:", showConfirmation);
 
   const handleAccept = () => {
     setShowConfirmation(true);

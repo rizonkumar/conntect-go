@@ -25,3 +25,13 @@ export const getETA = async (pickup, dropoff) => {
     },
   });
 };
+
+export const createRide = async (pickup, destination, vehicleType) => {
+  const body = {
+    pickup,
+    destination,
+    vehicleType,
+  };
+  const url = "/api/rides/create-ride";
+  return generalApi.GeneralApi.post(url, body);
+};
