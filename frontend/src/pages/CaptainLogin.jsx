@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ArrowRight, User, AlertCircle } from "lucide-react";
 import { CaptainDataContext } from "../context/CaptainContext";

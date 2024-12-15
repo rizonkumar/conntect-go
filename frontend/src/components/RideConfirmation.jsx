@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Shield, Share2, Phone } from "lucide-react";
 import {
   dummyDriverData,
@@ -12,8 +12,8 @@ const RideConfirmation = ({ pickup, dropoff, onCancel }) => {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
   // Use real pickup/dropoff if provided, otherwise use dummy data
-  const pickupLocation = pickup || dummyRideData.locations.pickup.name;
-  const dropoffLocation = dropoff || dummyRideData.locations.dropoff.name;
+  const pickupLocation = pickup;
+  const dropoffLocation = dropoff;
 
   useEffect(() => {
     const timer = setTimeout(() => {

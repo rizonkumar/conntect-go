@@ -1,4 +1,3 @@
-import React from "react";
 import { User, Shield, Clock, Star, MapPin } from "lucide-react";
 
 export const ProfileHeader = ({ name, type, email }) => (

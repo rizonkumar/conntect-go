@@ -1,4 +1,3 @@
-import React from "react";
 import { Power, Circle, Square, CreditCard, ArrowLeft } from "lucide-react";
 import { rideRequests, rideDetails } from "../../../constants/data";
 

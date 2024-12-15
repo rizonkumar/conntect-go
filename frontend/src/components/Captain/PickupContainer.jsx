@@ -1,6 +1,5 @@
-// PickupContainer.jsx
-import React, { useState, useRef } from "react";
-import { ChevronUp, ChevronDown } from "lucide-react"; // Import both icons
+import { useState, useRef } from "react";
+import { ChevronUp, ChevronDown } from "lucide-react";
 import PickupMap from "./PickupMap";
 import PickupDetails from "./PickupDetails";
 import { pickupDirections } from "../../../constants/data";

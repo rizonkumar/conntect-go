@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Clock, User, MapPin, Timer } from "lucide-react";
 import { rides } from "../../constants/data";
 import RideConfirmation from "./RideConfirmation";

@@ -1,4 +1,3 @@
-import React from "react";
 import { MapPin, Clock, FileText, Power } from "lucide-react";
 
 const InactiveStatus = ({

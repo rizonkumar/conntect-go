@@ -1,6 +1,4 @@
-// PickupDetails.jsx
-import React, { useState } from "react";
-import { MapPin, Clock, DollarSign } from "lucide-react";
+import { useState } from "react";
 import RideComplete from "./RideComplete";
 import RideCompleted from "./RideCompleted";
 

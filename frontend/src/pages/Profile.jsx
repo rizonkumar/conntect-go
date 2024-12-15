@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useCallback } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserDataContext } from "../context/UserContext";
 import { CaptainDataContext } from "../context/CaptainContext";
@@ -162,7 +162,7 @@ const Profile = () => {
                     isCaptain={isCaptainProfile}
                     onAction={() =>
                       navigate(
-                        isCaptainProfile ? "/captain-dashboard" : "/book-ride"
+                        isCaptainProfile ? "/captain-dashboard" : "/book-ride",
                       )
                     }
                   />

@@ -1,4 +1,3 @@
-import React from "react";
 import { CheckCircle, Clock } from "lucide-react";
 
 const RideCompleted = ({ fare, duration, distance, onFindNewRides }) => {

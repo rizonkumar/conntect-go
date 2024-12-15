@@ -1,4 +1,3 @@
-import React from "react";
 import { Phone, MessageSquare, X, MapPin } from "lucide-react";
 
 const AcceptedRideDetails = ({ rideDetails, onCancel, onGoToPickup }) => {
