@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { X } from "lucide-react";
+import { useState, useRef } from "react";
 
 const RideConfirmationCaptain = ({
   passenger,
@@ -9,16 +8,11 @@ const RideConfirmationCaptain = ({
   distance,
   onConfirm,
   onCancel,
-  expectedOTP, // This would come from the backend/passenger
+  expectedOTP,
 }) => {
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [error, setError] = useState("");
-  const inputRefs = [
-    React.useRef(null),
-    React.useRef(null),
-    React.useRef(null),
-    React.useRef(null),
-  ];
+  const inputRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
 
   const handleOtpChange = (index, value) => {
     if (value.length > 1) return; // Only allow single digit

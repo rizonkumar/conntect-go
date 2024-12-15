@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import InactiveStatus from "../components/Captain/InactiveStatus";
-import { captainStats, rideDetails } from "../../constants/data";
+import { captainStats } from "../../constants/data";
 import ActiveStatus from "../components/Captain/ActiveStatus";
 import RideRequest from "../components/Captain/RideRequest";
 import AcceptedRideDetails from "../components/Captain/AcceptedRideDetails";
@@ -54,12 +54,10 @@ const CaptainHome = () => {
   return (
     <div>
       {!isOnline ? (
-        <InactiveStatus 
-          {...captainStats} 
-          onGoOnline={handleGoOnline} 
-          headerRight={
-            <ProfileDropdown userType="captain" />
-          }
+        <InactiveStatus
+          {...captainStats}
+          onGoOnline={handleGoOnline}
+          headerRight={<ProfileDropdown userType="captain" />}
         />
       ) : (
         <>
@@ -80,7 +78,7 @@ const CaptainHome = () => {
               onAcceptRide={handleAcceptRide}
             />
           )}
-          
+
           {showRideRequests && (
             <RideRequest
               onBack={handleBackFromRequests}

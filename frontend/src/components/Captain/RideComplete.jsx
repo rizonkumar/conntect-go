@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { CheckCircle, X, CreditCard, Wallet } from "lucide-react";
 
 const RideComplete = ({ fare, onClose, onComplete }) => {
   const [selectedPayment, setSelectedPayment] = useState("cash");
-  console.log("1");
   const paymentMethods = [
     {
       id: "cash",

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import { verifyToken } from "./api/authApi";
 import Welcome from "./pages/Welcome";

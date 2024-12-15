@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import {
@@ -61,7 +61,7 @@ export const LocationsPanel = ({
         setIsLoading(false);
       }
     }, 500),
-    []
+    [],
   );
 
   useEffect(() => {

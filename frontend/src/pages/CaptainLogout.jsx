@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../api/authApi";
 
@@ -7,7 +7,7 @@ export const CaptainLogout = () => {
 
   const handleLogout = useCallback(async () => {
     try {
-      await logout('captain');
+      await logout("captain");
       localStorage.removeItem("captainToken");
       navigate("/", { replace: true });
     } catch (error) {

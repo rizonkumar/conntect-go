@@ -13,7 +13,6 @@ module.exports.getCoordinates = async (req, res, next) => {
   }
   try {
     const { address } = req.query;
-    console.log(address);
     const coordinates = await mapService.getAddressCoordinates(address);
     res.status(200).json({
       status: "success",
@@ -48,7 +47,7 @@ module.exports.getDistanceTime = async (req, res, next) => {
   } catch (error) {
     throw new AppError(
       error.message || "Error fetching distance and time",
-      500
+      500,
     );
   }
 };
