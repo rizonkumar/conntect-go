@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Circle, Square, Clock, ChevronDown, LogOut } from "lucide-react";
+import { User, Circle, Clock, ChevronDown, LogOut } from "lucide-react";
 import { LocationsPanel } from "../components/LocationsPanel";
 import RideOptions from "../components/RideOptions";
 import { CaptainDataContext } from "../context/CaptainContext";
@@ -150,7 +150,7 @@ const Home = () => {
             <h1 className="text-2xl font-bold mb-6">Get a ride</h1>
             <div className="space-y-4">
               {/* Pickup Input */}
-              <div className="relative">
+              {/* <div className="relative">
                 <div className="absolute left-4 top-1/2 -translate-y-1/2">
                   <Circle className="h-5 w-5 text-gray-600 fill-current" />
                 </div>
@@ -162,19 +162,18 @@ const Home = () => {
                   placeholder="Pickup location"
                   className="w-full bg-gray-100 p-4 pl-12 rounded-lg focus:outline-none cursor-pointer"
                 />
-              </div>
-
-              {/* Dropoff Input */}
+              </div> */}
+              {/* Where to Input */}
               <div className="relative">
                 <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                  <Square className="h-5 w-5 text-gray-600 fill-current" />
+                  <Circle className="h-5 w-5 text-gray-600 fill-current" />
                 </div>
                 <input
                   type="text"
                   value={dropoff}
                   onClick={() => setPanelOpen(true)}
                   readOnly
-                  placeholder="Dropoff location"
+                  placeholder="Where to"
                   className="w-full bg-gray-100 p-4 pl-12 rounded-lg focus:outline-none cursor-pointer"
                 />
               </div>
