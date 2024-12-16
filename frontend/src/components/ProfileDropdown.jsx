@@ -7,6 +7,7 @@ import { logout } from "../api/authApi";
 
 const ProfileDropdown = ({ userType }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const { user, setUser } = useContext(UserDataContext);
@@ -14,7 +15,6 @@ const ProfileDropdown = ({ userType }) => {
 
   const profileData = userType === "captain" ? captain : user;
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -29,16 +29,46 @@ const ProfileDropdown = ({ userType }) => {
   }, []);
 
   const handleLogout = async () => {
+    if (isLoggingOut) return;
+
     try {
+      setIsLoggingOut(true);
       await logout(userType);
+
       if (userType === "user") {
-        setUser(null);
+        setUser({
+          email: "",
+          fullName: {
+            firstName: "",
+            lastName: "",
+          },
+        });
+        localStorage.removeItem("userToken");
       } else if (userType === "captain") {
         setCaptain(null);
+        localStorage.removeItem("captainToken");
       }
-      navigate("/welcome");
+
+      navigate("/");
     } catch (error) {
       console.error("Logout failed", error);
+      if (userType === "user") {
+        setUser({
+          email: "",
+          fullName: {
+            firstName: "",
+            lastName: "",
+          },
+        });
+        localStorage.removeItem("userToken");
+      } else if (userType === "captain") {
+        setCaptain(null);
+        localStorage.removeItem("captainToken");
+      }
+      navigate("/");
+    } finally {
+      setIsLoggingOut(false);
+      setIsOpen(false);
     }
   };
 
@@ -47,11 +77,17 @@ const ProfileDropdown = ({ userType }) => {
     return `${fullName.firstName[0]}${fullName.lastName[0]}`.toUpperCase();
   };
 
+  const handleProfileClick = () => {
+    navigate(`/${userType}/profile`);
+    setIsOpen(false);
+  };
+
   return (
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center justify-center w-10 h-10 bg-white border border-gray-300 text-gray-700 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-300"
+        aria-label="Profile menu"
       >
         {getInitials(profileData?.fullName)}
       </button>
@@ -67,21 +103,23 @@ const ProfileDropdown = ({ userType }) => {
               {profileData?.email}
             </p>
           </div>
+
           <ul className="py-1">
             <li
-              onClick={() => {
-                navigate(`/${userType}/profile`);
-                setIsOpen(false);
-              }}
+              onClick={handleProfileClick}
               className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
             >
-              <User className="mr-3 h-5 w-5 text-gray-500" /> Profile
+              <User className="mr-3 h-5 w-5 text-gray-500" />
+              Profile
             </li>
             <li
               onClick={handleLogout}
-              className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 cursor-pointer"
+              className={`flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 cursor-pointer ${
+                isLoggingOut ? "opacity-50 pointer-events-none" : ""
+              }`}
             >
-              <Power className="mr-3 h-5 w-5" /> Logout
+              <Power className="mr-3 h-5 w-5" />
+              {isLoggingOut ? "Logging out..." : "Logout"}
             </li>
           </ul>
         </div>
