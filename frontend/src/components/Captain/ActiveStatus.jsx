@@ -1,85 +1,87 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   MapPin,
-  Circle,
   Power,
   Navigation2,
   CreditCard,
   ThumbsUp,
   ThumbsDown,
 } from "lucide-react";
-import { activeRideRequest } from "../../../constants/data";
-import RideConfirmationCaptain from "./RideConfirmationCaptain";
+import { useSocket } from "../../context/SocketContext";
 
 const ActiveStatus = ({ onIgnore, onToggleOnline, isOnline, onAcceptRide }) => {
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const { passenger, ride } = activeRideRequest;
+  const socket = useSocket();
+  const [activeRequest, setActiveRequest] = useState(null);
 
-  const handleAccept = () => {
-    setShowConfirmation(true);
-  };
+  useEffect(() => {
+    if (!socket) return;
 
-  const handleConfirmRide = () => {
-    const formattedRide = {
-      passenger: {
-        name: passenger.name,
-        image: passenger.image,
-        paymentMethod: passenger.paymentMethod,
-        hasDiscount: passenger.hasDiscount,
-      },
-      pickup: ride.pickup,
-      dropoff: ride.dropoff,
-      fare: ride.fare,
-      distance: ride.distance,
-      notes: "",
-      payments: [{ label: passenger.paymentMethod, amount: ride.fare }],
+    // Listen for new ride requests
+    socket.on("ride:new_request", (rideData) => {
+      console.log("New ride request received:", rideData);
+      setActiveRequest(rideData);
+    });
+
+    // Clear request when it becomes unavailable
+    socket.on("ride:unavailable", (rideId) => {
+      if (activeRequest && activeRequest.rideId === rideId) {
+        setActiveRequest(null);
+      }
+    });
+
+    return () => {
+      socket.off("ride:new_request");
+      socket.off("ride:unavailable");
     };
-    onAcceptRide(formattedRide);
-  };
+  }, [socket, activeRequest]);
 
-  if (showConfirmation) {
+  if (!activeRequest) {
     return (
-      <RideConfirmationCaptain
-        passenger={passenger}
-        pickup={ride.pickup.address}
-        dropoff={ride.dropoff.address}
-        fare={ride.fare}
-        distance={ride.distance}
-        expectedOTP="1234" // This should come from your backend
-        onConfirm={handleConfirmRide}
-        onCancel={() => setShowConfirmation(false)}
-      />
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <div className="bg-black text-white p-4 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <Power className="h-5 w-5" />
+              <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full"></div>
+            </div>
+            <span className="font-medium">Online</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={isOnline}
+                onChange={onToggleOnline}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-green-500 peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+            </label>
+          </div>
+        </div>
+
+        {/* Empty State */}
+        <div className="flex items-center justify-center h-[calc(100vh-64px)]">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <MapPin className="h-8 w-8 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              Waiting for rides
+            </h3>
+            <p className="text-gray-500">New ride requests will appear here</p>
+          </div>
+        </div>
+      </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-black text-white p-4 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Power className="h-5 w-5" />
-            <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full"></div>
-          </div>
-          <span className="font-medium">Online</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={isOnline}
-              onChange={onToggleOnline}
-              className="sr-only peer"
-            />
-            <div className="w-11 h-6 bg-green-500 peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
-          </label>
-        </div>
-      </div>
-
       {/* Map Section */}
       <div className="relative h-[60vh] bg-gray-200">
         <img
-          src={activeRideRequest.mapImage}
+          src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
           alt="Map"
           className="w-full h-full object-cover"
         />
@@ -101,29 +103,26 @@ const ActiveStatus = ({ onIgnore, onToggleOnline, isOnline, onAcceptRide }) => {
           {/* User Info */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <img
-                src={passenger.image}
-                alt={passenger.name}
-                className="w-14 h-14 rounded-full object-cover border-2 border-gray-100"
-              />
+              <div className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center">
+                <User className="h-6 w-6 text-gray-500" />
+              </div>
               <div>
-                <h3 className="text-lg font-semibold">{passenger.name}</h3>
+                <h3 className="text-lg font-semibold">
+                  {activeRequest.userName || "New Request"}
+                </h3>
                 <div className="flex gap-2 mt-1">
                   <div className="flex items-center gap-1 bg-yellow-100 text-yellow-800 px-2 py-1 rounded-md text-sm">
                     <CreditCard className="h-4 w-4" />
-                    <span>{passenger.paymentMethod}</span>
+                    <span>{activeRequest.paymentMethod || "Cash"}</span>
                   </div>
-                  {passenger.hasDiscount && (
-                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded-md text-sm">
-                      Discount
-                    </span>
-                  )}
                 </div>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-xl font-bold">${ride.fare.toFixed(2)}</p>
-              <p className="text-sm text-gray-500">{ride.distance} km</p>
+              <p className="text-xl font-bold">₹{activeRequest.fare}</p>
+              <p className="text-sm text-gray-500">
+                {activeRequest.distance} km
+              </p>
             </div>
           </div>
 
@@ -134,14 +133,14 @@ const ActiveStatus = ({ onIgnore, onToggleOnline, isOnline, onAcceptRide }) => {
               <Circle className="h-5 w-5 text-gray-400 flex-shrink-0 mt-1" />
               <div>
                 <p className="text-xs font-medium text-gray-500">PICK UP</p>
-                <p className="font-medium mt-0.5">{ride.pickup.address}</p>
+                <p className="font-medium">{activeRequest.pickup}</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
               <div className="h-5 w-5 rounded-sm bg-black flex-shrink-0 mt-1"></div>
               <div>
                 <p className="text-xs font-medium text-gray-500">DROP OFF</p>
-                <p className="font-medium mt-0.5">{ride.dropoff.address}</p>
+                <p className="font-medium">{activeRequest.destination}</p>
               </div>
             </div>
           </div>
@@ -156,7 +155,7 @@ const ActiveStatus = ({ onIgnore, onToggleOnline, isOnline, onAcceptRide }) => {
               <span>Ignore</span>
             </button>
             <button
-              onClick={handleAccept}
+              onClick={() => onAcceptRide(activeRequest)}
               className="flex-1 py-4 bg-yellow-400 rounded-xl font-medium hover:bg-yellow-500 transition-colors flex items-center justify-center gap-2"
             >
               <ThumbsUp className="h-5 w-5" />

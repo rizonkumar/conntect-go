@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { useSocket } from "../context/SocketContext";
+import { CaptainDataContext } from "../context/CaptainContext";
 import InactiveStatus from "../components/Captain/InactiveStatus";
 import { captainStats } from "../../constants/data";
 import ActiveStatus from "../components/Captain/ActiveStatus";
@@ -8,16 +10,61 @@ import PickupContainer from "../components/Captain/PickupContainer";
 import ProfileDropdown from "../components/ProfileDropdown";
 
 const CaptainHome = () => {
+  const socket = useSocket();
+  const { captain } = useContext(CaptainDataContext);
   const [isOnline, setIsOnline] = useState(false);
   const [showRideRequests, setShowRideRequests] = useState(false);
   const [acceptedRide, setAcceptedRide] = useState(null);
   const [showPickup, setShowPickup] = useState(false);
+  const [rideRequests, setRideRequests] = useState([]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    if (socket && isOnline && captain) {
+      // Emit captain online status
+      socket.emit("captain:online", {
+        id: captain.id,
+        location: captain.location,
+        vehicleType: captain.vehicle.vehicleType,
+      });
+
+      // Listen for new ride requests
+      socket.on("ride:new_request", (rideData) => {
+        console.log("New Ride Request Received", rideData);
+        setRideRequests((prev) => [...prev, rideData]);
+        setShowRideRequests(true);
+      });
+
+      // Listen for ride unavailable (when another captain accepts the ride)
+      socket.on("ride:unavailable", (rideId) => {
+        console.log("Ride Unavailable", rideId);
+        setRideRequests((prev) =>
+          prev.filter((request) => request.rideId !== rideId)
+        );
+      });
+    }
+
+    // Cleanup function
+    return () => {
+      if (socket) {
+        socket.off("ride:new_request");
+        socket.off("ride:unavailable");
+        if (isOnline && captain) {
+          socket.emit("captain:offline", captain._id);
+        }
+      }
+    };
+  }, [socket, isOnline, captain]);
 
   const handleGoOnline = () => {
     setIsOnline(true);
   };
 
   const handleGoOffline = () => {
+    if (socket && captain) {
+      socket.emit("captain:offline", captain._id);
+    }
     setIsOnline(false);
     setShowRideRequests(false);
     setAcceptedRide(null);
@@ -32,6 +79,18 @@ const CaptainHome = () => {
   };
 
   const handleAcceptRide = (ride) => {
+    if (socket) {
+      socket.emit("ride:accept", {
+        rideId: ride.rideId,
+        captainId: captain._id,
+        userId: ride.userId,
+        captain: {
+          id: captain._id,
+          name: `${captain.fullName.firstName} ${captain.fullName.lastName}`,
+          vehicleInfo: captain.vehicle,
+        },
+      });
+    }
     setAcceptedRide(ride);
     setShowRideRequests(false);
   };
@@ -69,10 +128,8 @@ const CaptainHome = () => {
             <ProfileDropdown userType="captain" />
           </div>
 
-          {/* Rest of the components */}
           {!showRideRequests && !acceptedRide && !showPickup && (
             <ActiveStatus
-              onIgnore={handleIgnoreRide}
               onToggleOnline={handleGoOffline}
               isOnline={isOnline}
               onAcceptRide={handleAcceptRide}
@@ -81,7 +138,8 @@ const CaptainHome = () => {
 
           {showRideRequests && (
             <RideRequest
-              onBack={handleBackFromRequests}
+              requests={rideRequests}
+              onBack={() => setShowRideRequests(false)}
               onToggleOnline={handleGoOffline}
               isOnline={isOnline}
               onAcceptRide={handleAcceptRide}
@@ -91,8 +149,11 @@ const CaptainHome = () => {
           {acceptedRide && !showPickup && (
             <AcceptedRideDetails
               rideDetails={acceptedRide}
-              onCancel={handleCancelRide}
-              onGoToPickup={handleGoToPickup}
+              onCancel={() => {
+                setAcceptedRide(null);
+                setShowPickup(false);
+              }}
+              onGoToPickup={() => setShowPickup(true)}
             />
           )}
 
@@ -100,7 +161,10 @@ const CaptainHome = () => {
             <PickupContainer
               pickup={acceptedRide.pickup}
               onBack={() => setShowPickup(false)}
-              onFindNewRides={handleFindNewRides}
+              onFindNewRides={() => {
+                setAcceptedRide(null);
+                setShowPickup(false);
+              }}
             />
           )}
         </>

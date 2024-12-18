@@ -4,14 +4,41 @@ const AppError = require("../utils/AppError");
 
 const createRide = async (req, res, next) => {
   try {
-    const { pickup, destination } = req.body;
-    const user = {
-      id: req.user._id,
-      vehicleType: req.body.vehicleType, // 'auto', 'car', or 'motorcycle'
-    };
+    const { pickup, destination, vehicleType } = req.body;
+    const user = req.user;
 
-    const ride = await rideService.createRide({ user, pickup, destination });
+    if (!pickup || !destination || !vehicleType) {
+      throw new AppError(
+        "Pickup, destination and vehicle type are required",
+        400
+      );
+    }
 
+    const ride = await rideService.createRide({
+      user: {
+        id: user._id,
+        vehicleType,
+      },
+      pickup,
+      destination,
+    });
+
+    // Get io instance and emit event
+    const io = req.app.get("io");
+    if (io) {
+      io.emit("ride:new_request", {
+        rideId: ride._id,
+        userId: user.id,
+        userName: `${user.fullName.firstName} ${user.fullName.lastName}`,
+        userImage: user.image || "/default-avatar.png",
+        pickup,
+        destination,
+        vehicleType,
+        fare: ride.fare,
+        paymentMethod: "cash", // Or get from request
+        distance: ride.distance || "0",
+      });
+    }
     res.status(201).json({
       status: "success",
       message: "Ride created successfully",
@@ -110,22 +137,23 @@ const getETA = async (req, res, next) => {
 
     try {
       const pickupCoords = await mapService.getAddressCoordinates(pickup);
-      const destinationCoords =
-        await mapService.getAddressCoordinates(destination);
+      const destinationCoords = await mapService.getAddressCoordinates(
+        destination
+      );
 
       if (!pickupCoords || !destinationCoords) {
         next(
           new AppError(
             "Unable to get coordinates for the provided addresses",
-            400,
-          ),
+            400
+          )
         );
       }
 
       const { travelTime, distance, formattedTime } =
         await rideService.calculateETA(
           { latitude: pickupCoords.lat, longitude: pickupCoords.lng },
-          { latitude: destinationCoords.lat, longitude: destinationCoords.lng },
+          { latitude: destinationCoords.lat, longitude: destinationCoords.lng }
         );
 
       res.status(200).json({

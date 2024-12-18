@@ -1,11 +1,48 @@
-import { Power, Circle, Square, CreditCard, ArrowLeft } from "lucide-react";
-import { rideRequests, rideDetails } from "../../../constants/data";
+import { Power, Circle, Square, ArrowLeft, User, Clock } from "lucide-react";
+import { useSocket } from "../../context/SocketContext";
 
-const RideRequest = ({ onBack, onToggleOnline, isOnline, onAcceptRide }) => {
-  const handleAcceptRide = () => {
-    // Pass the rideDetails when accepting a ride
-    onAcceptRide(rideDetails);
+const RideRequest = ({
+  requests,
+  onBack,
+  onToggleOnline,
+  isOnline,
+  onAcceptRide,
+}) => {
+  const socket = useSocket();
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+    }).format(price);
   };
+
+  const getPaymentMethodTag = (method) => {
+    switch (method) {
+      case "cash":
+        return {
+          text: "Cash",
+          bgColor: "bg-yellow-100",
+          textColor: "text-yellow-800",
+          icon: "💵",
+        };
+      case "card":
+        return {
+          text: "Card",
+          bgColor: "bg-blue-100",
+          textColor: "text-blue-800",
+          icon: "💳",
+        };
+      default:
+        return {
+          text: "Cash",
+          bgColor: "bg-yellow-100",
+          textColor: "text-yellow-800",
+          icon: "💵",
+        };
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -37,84 +74,134 @@ const RideRequest = ({ onBack, onToggleOnline, isOnline, onAcceptRide }) => {
       </div>
 
       {/* Notification Banner */}
-      <div className="fixed top-[60px] left-0 right-0 bg-orange-500 text-white p-3 text-center z-40">
-        You have {rideRequests.length} new requests.
-      </div>
+      {requests.length > 0 && (
+        <div className="fixed top-[60px] left-0 right-0 bg-orange-500 text-white p-3 text-center z-40">
+          You have {requests.length} new{" "}
+          {requests.length === 1 ? "request" : "requests"}.
+        </div>
+      )}
 
       {/* Ride Requests List */}
       <div className="pt-[120px] pb-4 px-4 md:max-w-2xl md:mx-auto">
         <div className="space-y-4">
-          {rideRequests.map((request) => (
-            <div
-              key={request.id}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
-            >
-              {/* User Info */}
-              <div className="p-4 border-b">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={request.passenger.image}
-                      alt={request.passenger.name}
-                      className="w-12 h-12 rounded-full object-cover"
-                    />
-                    <div>
-                      <h3 className="font-medium">{request.passenger.name}</h3>
-                      <div className="flex gap-2 mt-1">
-                        <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded flex items-center gap-1">
-                          <CreditCard className="w-3 h-3" />
-                          {request.passenger.paymentMethod}
-                        </span>
-                        {request.passenger.hasDiscount && (
-                          <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded">
-                            Discount
+          {requests.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <Clock className="h-8 w-8 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No Active Requests
+              </h3>
+              <p className="text-gray-500">
+                New ride requests will appear here
+              </p>
+            </div>
+          ) : (
+            requests.map((request) => (
+              <div
+                key={request.rideId}
+                className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow"
+              >
+                {/* User Info Section */}
+                <div className="p-4 border-b">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="h-12 w-12 bg-gray-100 rounded-full flex items-center justify-center">
+                        <User className="h-6 w-6 text-gray-500" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-gray-900">
+                          New Ride Request
+                        </h3>
+                        <div className="flex gap-2 mt-1">
+                          {/* Payment Method Tag */}
+                          {request.paymentMethod && (
+                            <span
+                              className={`flex items-center gap-1 px-2 py-0.5 rounded-md text-sm ${
+                                getPaymentMethodTag(request.paymentMethod)
+                                  .bgColor
+                              } ${getPaymentMethodTag(request.paymentMethod).textColor}`}
+                            >
+                              <span>
+                                {
+                                  getPaymentMethodTag(request.paymentMethod)
+                                    .icon
+                                }
+                              </span>
+                              <span>
+                                {
+                                  getPaymentMethodTag(request.paymentMethod)
+                                    .text
+                                }
+                              </span>
+                            </span>
+                          )}
+                          {/* Distance Tag */}
+                          <span className="bg-blue-100 text-blue-800 text-sm px-2 py-0.5 rounded-md">
+                            {request.distance} km
                           </span>
-                        )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-semibold">
-                      ${request.ride.fare.toFixed(2)}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {request.ride.distance} km
-                    </p>
+                    <div className="text-right">
+                      <p className="text-lg font-bold text-gray-900">
+                        {formatPrice(request.fare)}
+                      </p>
+                      <p className="text-sm text-gray-500">Estimated</p>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Ride Details */}
-              <div className="p-4 bg-gray-50 space-y-3">
-                <div className="flex items-start gap-3">
-                  <Circle className="w-4 h-4 text-gray-400 mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="text-xs text-gray-500 font-medium">PICK UP</p>
-                    <p className="text-sm font-medium">{request.ride.pickup}</p>
+                {/* Ride Details */}
+                <div className="p-4 bg-gray-50 space-y-4">
+                  {/* Pickup Location */}
+                  <div className="flex items-start gap-3">
+                    <Circle className="w-4 h-4 text-gray-400 mt-1.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-xs font-medium text-gray-500">
+                        PICK UP
+                      </p>
+                      <p className="font-medium text-gray-900">
+                        {request.pickup}
+                      </p>
+                      {request.pickupNote && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          {request.pickupNote}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Square className="w-4 h-4 text-black mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="text-xs text-gray-500 font-medium">
-                      DROP OFF
-                    </p>
-                    <p className="text-sm font-medium">
-                      {request.ride.dropoff}
-                    </p>
-                  </div>
-                </div>
-              </div>
 
-              {/* Action Button */}
-              <button
-                className="w-full bg-yellow-400 p-3 font-medium hover:bg-yellow-500 transition-colors"
-                onClick={handleAcceptRide}
-              >
-                Accept
-              </button>
-            </div>
-          ))}
+                  {/* Dropoff Location */}
+                  <div className="flex items-start gap-3">
+                    <Square className="w-4 h-4 text-black mt-1.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-xs font-medium text-gray-500">
+                        DROP OFF
+                      </p>
+                      <p className="font-medium text-gray-900">
+                        {request.destination}
+                      </p>
+                      {request.dropoffNote && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          {request.dropoffNote}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Accept Button */}
+                <button
+                  onClick={() => onAcceptRide(request)}
+                  className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-medium py-4 transition-colors flex items-center justify-center gap-2"
+                >
+                  <span>Accept Ride</span>
+                  <ArrowLeft className="h-5 w-5 rotate-180" />
+                </button>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>
