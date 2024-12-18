@@ -5,41 +5,62 @@ import { useSocket } from "../context/SocketContext";
 const RideConfirmation = ({ pickup, dropoff, onCancel }) => {
   const [isSearching, setIsSearching] = useState(true);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(10);
+  const [timeLeft, setTimeLeft] = useState(20);
   const socket = useSocket();
   const [acceptedRide, setAcceptedRide] = useState(null);
 
   useEffect(() => {
+    let mounted = true;
     let timerId;
 
-    if (isSearching && timeLeft > 0) {
-      timerId = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            setShowCancelConfirm(true);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-
-    // Listen for ride acceptance
-    if (socket) {
-      socket.on("ride:accepted", (acceptedRideData) => {
+    const handleRideAccepted = (acceptedRideData) => {
+      console.log("Received ride acceptance:", acceptedRideData);
+      if (mounted) {
         setIsSearching(false);
         setAcceptedRide(acceptedRideData);
-        clearInterval(timerId);
+        if (timerId) clearInterval(timerId);
+      }
+    };
+
+    if (socket) {
+      console.log("Setting up socket listeners");
+      socket.on("ride:accepted", handleRideAccepted);
+
+      socket.io.on("reconnect", () => {
+        console.log("Socket reconnected");
       });
     }
 
+    if (isSearching && timeLeft > 0) {
+      timerId = setInterval(() => {
+        if (mounted) {
+          setTimeLeft((prev) => {
+            if (prev <= 1) {
+              setShowCancelConfirm(true);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }
+      }, 1000);
+    }
+
     return () => {
-      clearInterval(timerId);
+      mounted = false;
+      if (timerId) clearInterval(timerId);
       if (socket) {
-        socket.off("ride:accepted");
+        console.log("Cleaning up socket listeners");
+        socket.off("ride:accepted", handleRideAccepted);
+        socket.io.off("reconnect");
       }
     };
-  }, [isSearching, timeLeft, socket]);
+  }, [socket, isSearching, timeLeft]);
+
+  useEffect(() => {
+    if (socket) {
+      console.log("Socket connected:", socket.connected);
+    }
+  }, [socket]);
 
   if (isSearching) {
     return (

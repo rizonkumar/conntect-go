@@ -91,7 +91,22 @@ const CaptainHome = () => {
         },
       });
     }
-    setAcceptedRide(ride);
+
+    const formattedRideDetails = {
+      passenger: {
+        name: ride.userName || "Passenger",
+        image: ride.userImage,
+        paymentMethod: ride.paymentMethod,
+      },
+      pickup: ride.pickup,
+      destination: ride.destination,
+      fare: ride.fare,
+      distance: ride.distance,
+      status: "accepted",
+      payments: [{ label: "Ride Fare", amount: ride.fare }],
+    };
+
+    setAcceptedRide(formattedRideDetails);
     setShowRideRequests(false);
   };
 
