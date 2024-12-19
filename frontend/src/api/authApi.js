@@ -7,6 +7,11 @@ export const userLogin = (data) => {
   return generalApi.GeneralApi.post(url, data);
 };
 
+export const userRegister = (data) => {
+  const url = `/api/users/register`;
+  return generalApi.GeneralApi.post(url, data);
+};
+
 // Captain Login
 export const captainLogin = (data) => {
   const url = `/api/captains/login`;

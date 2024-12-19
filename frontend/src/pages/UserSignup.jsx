@@ -2,7 +2,7 @@ import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Car } from "lucide-react";
 import { UserDataContext } from "../context/UserContext";
-import { userLogin } from "../api/authApi";
+import { userRegister } from "../api/authApi";
 
 const UserSignup = () => {
   // State for form fields
@@ -28,7 +28,7 @@ const UserSignup = () => {
         password,
       };
 
-      const response = await userLogin(payload);
+      const response = await userRegister(payload);
       if (response.data) {
         const { data } = response.data;
         setUser(data.user);
