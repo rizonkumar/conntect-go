@@ -12,6 +12,11 @@ export const userRegister = (data) => {
   return generalApi.GeneralApi.post(url, data);
 };
 
+export const captainRegister = (data) => {
+  const url = `/api/captains/register`;
+  return generalApi.GeneralApi.post(url, data);
+};
+
 // Captain Login
 export const captainLogin = (data) => {
   const url = `/api/captains/login`;

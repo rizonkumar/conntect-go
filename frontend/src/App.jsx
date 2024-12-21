@@ -82,7 +82,7 @@ const App = () => {
   return (
     <UserDataContext.Provider value={{ user, setUser }}>
       <CaptainDataContext.Provider
-        value={{ captain, setCaptain, error, setError }}
+        value={{ captain, setCaptain, error, setError, setIsLoading }}
       >
         <div>
           <Routes>

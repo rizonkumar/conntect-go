@@ -2,8 +2,8 @@ import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, AlertCircle } from "lucide-react";
 import { CaptainDataContext } from "../context/CaptainContext";
-import { captainLogin } from "../api/authApi";
 import { InputField } from "../components/common/InputField.jsx";
+import { captainRegister } from "../api/authApi.js";
 
 const CaptainSignup = () => {
   const navigate = useNavigate();
@@ -92,7 +92,7 @@ const CaptainSignup = () => {
     setError(null);
 
     try {
-      const response = await captainLogin(payload);
+      const response = await captainRegister(payload);
 
       if (response.data) {
         setCaptain(response.data);

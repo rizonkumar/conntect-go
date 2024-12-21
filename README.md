@@ -10,6 +10,8 @@ TODO:
 5. For the User Side still it's searching which shouls not be the case right?
 
 THis is the response i got
+
+```
 {
 "status": "success",
 "message": "Ride created successfully",
@@ -25,4 +27,36 @@ THis is the response i got
 "\_\_v": 0
 }
 }
+```
+
+6. When the driver (pagar) login in i should see his details instead of dummy data.
+   "paragdriver@example.com"
+   if we dont have any details we can show it as N/A.
+
+rizon11#
+
+```
+{
+    "status": "success",
+    "message": "Captain logged in successfully",
+    "data": {
+        "captain": {
+            "fullName": {
+                "firstName": "parag",
+                "lastName": "driver"
+            },
+            "vehicle": {
+                "color": "Black",
+                "plate": "B4A1X9",
+                "capacity": 4,
+                "vehicleType": "car"
+            },
+            "_id": "67642bb2c90834c0325d56e2",
+            "email": "paragdriver@example.com",
+            "status": "inactive",
+            "__v": 0
+        },
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzY0MmJiMmM5MDgzNGMwMzI1ZDU2ZTIiLCJpYXQiOjE3MzQ2MTgxNzEsImV4cCI6MTczNDcwNDU3MX0.myJ_Qg70niLK1NY0l7zF7tG8th_eJjBhcmIs_6fVgr8"
+    }
 }
+```
